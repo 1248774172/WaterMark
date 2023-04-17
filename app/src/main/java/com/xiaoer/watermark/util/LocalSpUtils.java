@@ -1,0 +1,85 @@
+package com.xiaoer.watermark.util;
+
+
+import android.content.Context;
+import android.content.SharedPreferences;
+
+import com.google.gson.Gson;
+import com.xiaoer.watermark.bean.WaterMarkConfig;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+public class LocalSpUtils {
+    public static final String SP_NAME = "watermarkConfig";
+    public static final String WATER_MARK_CONFIG = "water_mark_config";
+    private static volatile LocalSpUtils mInstance;
+    private SharedPreferences mSharedPreferences;
+
+    private LocalSpUtils(Context context){
+        if(mSharedPreferences == null){
+            mSharedPreferences = context.getSharedPreferences(SP_NAME, Context.MODE_PRIVATE);
+        }
+    }
+
+    public static LocalSpUtils getInstance(Context context){
+        if(mInstance == null){
+            synchronized (LocalSpUtils.class){
+                if (mInstance == null){
+                    mInstance = new LocalSpUtils(context);
+                }
+            }
+        }
+        return mInstance;
+    }
+
+    public void saveWaterMarkConfig(WaterMarkConfig config){
+        if(config == null){
+            return;
+        }
+        Set<String> water_mark_config = mSharedPreferences.getStringSet(WATER_MARK_CONFIG, null);
+        HashSet<String> result = new HashSet<>();
+        if (water_mark_config == null || water_mark_config.size() == 0){
+            result.add(new Gson().toJson(config));
+        }else {
+            try {
+                JSONObject jsonObject;
+                for (String item : water_mark_config) {
+                    jsonObject = new JSONObject(item);
+                    if (config.configId.equals(jsonObject.optString("waterConfig"))) {
+                        result.add(new Gson().toJson(config));
+                    } else {
+                        result.add(item);
+                    }
+                }
+            } catch (JSONException e) {/**/}
+        }
+        mSharedPreferences.edit().putStringSet(WATER_MARK_CONFIG, result).apply();
+    }
+
+    public List<WaterMarkConfig> getWaterMarkConfigs(){
+        Set<String> stringSet = mSharedPreferences.getStringSet(WATER_MARK_CONFIG, null);
+        ArrayList<WaterMarkConfig> result = new ArrayList<>();
+        if(stringSet != null && stringSet.size() > 0){
+            for (String item : stringSet) {
+                result.add(new Gson().fromJson(item, WaterMarkConfig.class));
+            }
+        }
+        return result;
+    }
+
+    public WaterMarkConfig getCurrentAppConfig(String packageName){
+        List<WaterMarkConfig> waterMarkConfigs = getWaterMarkConfigs();
+        for (WaterMarkConfig item : waterMarkConfigs) {
+            if(item.packageList != null && item.packageList.contains(packageName)){
+                return item;
+            }
+        }
+        return null;
+    }
+}

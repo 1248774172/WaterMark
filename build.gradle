@@ -1,0 +1,41 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+buildscript {
+    configurations.all {
+        resolutionStrategy {
+            cacheChangingModulesFor 1, 'minutes'
+            cacheDynamicVersionsFor 1, 'minutes'
+        }
+    }
+    repositories {
+        mavenLocal()
+        jcenter()
+        google()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.3.3'
+    }
+
+}
+
+allprojects {
+    configurations.all {
+        resolutionStrategy {
+            cacheChangingModulesFor 1, 'minutes'
+            cacheDynamicVersionsFor 1, 'minutes'
+        }
+    }
+
+    repositories {
+        mavenLocal()
+        jcenter()
+        gradlePluginPortal()
+        google()
+        mavenCentral()
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}

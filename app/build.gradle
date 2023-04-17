@@ -1,0 +1,52 @@
+apply plugin: 'com.android.application'
+
+
+def packageNames = ['com.tencent.mm', 'com.jd.jxj', 'com.tencent.mobileqq']
+
+android {
+    def realVersioncode = getVersionCode()
+    compileSdkVersion 28
+
+    defaultConfig {
+        applicationId "com.xiaoer.watermark"
+        minSdkVersion 14
+        targetSdkVersion 28
+        versionCode realVersioncode
+        versionName "1.0"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+task(KillProcess) {
+    for (i in 0..<packageNames.size()) {
+        println "install 运行完成，结束 " + packageNames.get(i) + "进程"
+        def cmd = "adb shell am force-stop " + packageNames.get(i)
+        cmd.execute()
+    }
+}
+
+def getVersionCode() {
+    def propsFile = file('version.properties')
+    def properties = new Properties()
+    properties.load(new FileInputStream(propsFile))
+    def vCode = properties['versionCode'].toInteger()
+    properties['versionCode'] = (++vCode).toString()
+    properties.store(propsFile.newWriter(), null)
+    return vCode
+}
+
+dependencies {
+    // xposed
+    compileOnly 'de.robv.android.xposed:api:82'
+    api 'com.google.code.gson:gson:2.8.6'
+
+}

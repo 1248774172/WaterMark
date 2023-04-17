@@ -1,0 +1,2 @@
+rootProject.name = "WaterMark"
+include ':app'
