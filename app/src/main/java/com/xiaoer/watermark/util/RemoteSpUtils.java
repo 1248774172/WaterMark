@@ -8,11 +8,15 @@ import static com.xiaoer.watermark.bean.SPContact.WATER_MARK_CONFIG;
 import android.app.AndroidAppHelper;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.text.TextUtils;
 
 import com.google.gson.Gson;
+import com.xiaoer.watermark.BuildConfig;
+import com.xiaoer.watermark.bean.SPContact;
 import com.xiaoer.watermark.bean.WaterMarkConfig;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -45,6 +49,27 @@ public class RemoteSpUtils {
             }
         }
         return null;
+    }
+
+    public void saveWaterMarkConfig(WaterMarkConfig config){
+        if(config == null){
+            return;
+        }
+        List<WaterMarkConfig> waterMarkConfigs = getWaterMarkConfigs();
+        HashSet<String> result = new HashSet<>();
+        Gson gson = new Gson();
+        if(waterMarkConfigs == null || waterMarkConfigs.size() == 0){
+            result.add(gson.toJson(config));
+        }else {
+            for (WaterMarkConfig waterMarkConfig : waterMarkConfigs) {
+                result.add(gson.toJson(TextUtils.equals(waterMarkConfig.configId, config.configId) ? config : waterMarkConfig));
+            }
+        }
+        getSp().edit().putStringSet(WATER_MARK_CONFIG, result).apply();
+    }
+
+    public void setDebug(){
+        getSp().edit().putBoolean(SPContact.IS_CAN_SHOW_LOG, BuildConfig.DEBUG).apply();
     }
 
     private Context getContext() {

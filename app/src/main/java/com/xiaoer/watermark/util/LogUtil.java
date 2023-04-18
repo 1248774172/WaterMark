@@ -1,6 +1,8 @@
 package com.xiaoer.watermark.util;
 
 import android.app.Application;
+import android.text.TextUtils;
+import android.util.Log;
 
 import de.robv.android.xposed.XposedBridge;
 
@@ -14,14 +16,20 @@ public class LogUtil {
         canShowLog = canShowLog();
     }
     public static void d(String log) {
-        if(canShowLog()){
-            XposedBridge.log("yys " + log);
-        }
+        print("yys " + log);
     }
 
     public static void e(String errorMsg) {
+        print("yys error: " + errorMsg);
+    }
+
+    private static void print(String msg){
         if(canShowLog()){
-            XposedBridge.log("yys error: " + errorMsg);
+            if(mApplication != null && TextUtils.equals(mApplication.getPackageName(), "com.xiaoer.watermark")){
+                XposedBridge.log(msg);
+            }else {
+                Log.d("Xposed", msg);
+            }
         }
     }
 

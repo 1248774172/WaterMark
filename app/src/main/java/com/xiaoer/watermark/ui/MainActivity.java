@@ -13,7 +13,7 @@ import android.widget.Toast;
 
 import com.xiaoer.watermark.R;
 import com.xiaoer.watermark.bean.WaterMarkConfig;
-import com.xiaoer.watermark.util.LocalSpUtils;
+import com.xiaoer.watermark.util.RemoteSpUtils;
 
 import java.util.List;
 
@@ -22,13 +22,16 @@ public class MainActivity extends Activity {
     private EditText mEtContent;
     private EditText mEtColor;
     private EditText mEtSize;
+    private RemoteSpUtils mSpUtils;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initView();
-        LocalSpUtils.getInstance(getApplicationContext()).setDebug();
+        mSpUtils = new RemoteSpUtils(getApplicationContext());
+        mSpUtils.setDebug();
+
     }
 
     private void initView() {
@@ -36,8 +39,6 @@ public class MainActivity extends Activity {
         mEtContent = findViewById(R.id.et_content);
         mEtColor = findViewById(R.id.et_color);
         mEtSize = findViewById(R.id.et_size);
-
-        LocalSpUtils instance = LocalSpUtils.getInstance(getApplicationContext());
 
         WaterMarkConfig waterMarkConfig = new WaterMarkConfig();
         waterMarkConfig.content = "jxjTest";
@@ -47,8 +48,8 @@ public class MainActivity extends Activity {
         waterMarkConfig.addApp("com.xiaoer.watermark");
 
         btSave.setOnClickListener(v -> {
-            instance.saveWaterMarkConfig(waterMarkConfig);
-            List<WaterMarkConfig> waterMarkConfigs = instance.getWaterMarkConfigs();
+            mSpUtils.saveWaterMarkConfig(waterMarkConfig);
+            List<WaterMarkConfig> waterMarkConfigs = mSpUtils.getWaterMarkConfigs();
             Toast.makeText(getApplicationContext(), waterMarkConfigs.toString() , Toast.LENGTH_SHORT).show();
         });
     }
