@@ -11,7 +11,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.xiaoer.watermark.BuildConfig;
 import com.xiaoer.watermark.R;
 import com.xiaoer.watermark.bean.WaterMarkConfig;
 import com.xiaoer.watermark.util.LocalSpUtils;
@@ -29,9 +28,7 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initView();
-        if(BuildConfig.DEBUG){
-            LocalSpUtils.getInstance(getApplicationContext()).setDebug();
-        }
+        LocalSpUtils.getInstance(getApplicationContext()).setDebug();
     }
 
     private void initView() {
@@ -46,6 +43,7 @@ public class MainActivity extends Activity {
         waterMarkConfig.content = "jxjTest";
         waterMarkConfig.configId = System.currentTimeMillis() + "";
         waterMarkConfig.addApp("com.jd.jxj");
+        waterMarkConfig.addApp("com.tencent.mm");
         waterMarkConfig.addApp("com.xiaoer.watermark");
 
         btSave.setOnClickListener(v -> {

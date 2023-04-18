@@ -62,7 +62,7 @@ import java.util.WeakHashMap;
  * @version 1.0
  * @since JDK1.6
  */
-public class MultiprocessSharedPreferences extends ContentProvider implements SharedPreferences {
+public class MultiProcessSharedPreferences extends ContentProvider implements SharedPreferences {
     public static final boolean DEBUG = BuildConfig.DEBUG;
     private static final String TAG = "SharedPreferences";
     private static final Object CONTENT = new Object();
@@ -108,11 +108,11 @@ public class MultiprocessSharedPreferences extends ContentProvider implements Sh
      * @deprecated 此默认构造函数只用于父类ContentProvider在初始化时使用；
      */
     @Deprecated
-    public MultiprocessSharedPreferences() {
+    public MultiProcessSharedPreferences() {
 
     }
 
-    private MultiprocessSharedPreferences(Context context, String name, int mode) {
+    private MultiProcessSharedPreferences(Context context, String name, int mode) {
         mContext = context;
         mName = name;
         mMode = mode;
@@ -137,7 +137,7 @@ public class MultiprocessSharedPreferences extends ContentProvider implements Sh
      * @see Context#MODE_WORLD_WRITEABLE
      */
     public static SharedPreferences getSharedPreferences(Context context, String name, int mode) {
-        return new MultiprocessSharedPreferences(context, name, mode);
+        return new MultiProcessSharedPreferences(context, name, mode);
     }
 
     // 如果设备处在“安全模式”下，只有系统自带的ContentProvider才能被正常解析使用；
@@ -158,14 +158,14 @@ public class MultiprocessSharedPreferences extends ContentProvider implements Sh
 
     private boolean checkInitAuthority(Context context) {
         if (AUTHORITY_URI == null) {
-            synchronized (MultiprocessSharedPreferences.this) {
+            synchronized (MultiProcessSharedPreferences.this) {
                 if (AUTHORITY_URI == null) {
                     if (AUTHORITY == null) {
                         AUTHORITY = ReflectionUtil.contentProvidermAuthority(this);
                     }
                     if (DEBUG) {
                         if (AUTHORITY == null) {
-                            throw new IllegalArgumentException("'AUTHORITY' initialize failed, Unable to find explicit provider class " + MultiprocessSharedPreferences.class.getName() + "; have you declared this provider in your AndroidManifest.xml?");
+                            throw new IllegalArgumentException("'AUTHORITY' initialize failed, Unable to find explicit provider class " + MultiProcessSharedPreferences.class.getName() + "; have you declared this provider in your AndroidManifest.xml?");
                         } else {
                             Log.d(TAG, "checkInitAuthority.AUTHORITY = " + AUTHORITY);
                         }
@@ -267,7 +267,7 @@ public class MultiprocessSharedPreferences extends ContentProvider implements Sh
     public void registerOnSharedPreferenceChangeListener(OnSharedPreferenceChangeListener listener) {
         synchronized (this) {
             if (mListeners == null) {
-                mListeners = new WeakHashMap<OnSharedPreferenceChangeListener, Object>();
+                mListeners = new WeakHashMap<>();
             }
             Boolean result = (Boolean) getValue(PATH_REGISTER_ON_SHARED_PREFERENCE_CHANGE_LISTENER, null, false);
             if (result != null && result) {
@@ -285,7 +285,7 @@ public class MultiprocessSharedPreferences extends ContentProvider implements Sh
                                     final String key = keysModified.get(i);
                                     for (OnSharedPreferenceChangeListener listener : listeners) {
                                         if (listener != null) {
-                                            listener.onSharedPreferenceChanged(MultiprocessSharedPreferences.this, key);
+                                            listener.onSharedPreferenceChanged(MultiProcessSharedPreferences.this, key);
                                         }
                                     }
                                 }
@@ -358,7 +358,7 @@ public class MultiprocessSharedPreferences extends ContentProvider implements Sh
     }
 
     private String makeAction(String name) {
-        return String.format("%1$s_%2$s", MultiprocessSharedPreferences.class.getName(), name);
+        return String.format("%1$s_%2$s", MultiProcessSharedPreferences.class.getName(), name);
     }
 
     @Override

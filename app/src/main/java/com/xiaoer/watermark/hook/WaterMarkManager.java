@@ -6,10 +6,12 @@ import android.app.Application;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.text.TextUtils;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.xiaoer.watermark.bean.AppConfig;
+import com.xiaoer.watermark.bean.SPContact;
 import com.xiaoer.watermark.bean.WaterMarkConfig;
 import com.xiaoer.watermark.ui.Watermark;
 import com.xiaoer.watermark.util.LogUtil;
@@ -23,6 +25,8 @@ public class WaterMarkManager {
     private static WaterMarkManager mManager;
     private final AtomicBoolean canShow = new AtomicBoolean();
     private static WaterMarkConfig  mWaterMarkConfig;
+    private Watermark mInstance;
+
     private WaterMarkManager(){
     }
 
@@ -118,15 +122,17 @@ public class WaterMarkManager {
 
     public void showWaterMark(Activity activity){
         if (canShow.get()) {
-            Watermark instance = new Watermark(activity);
+            if(mInstance == null){
+                mInstance = new Watermark(activity);
+            }
             if (mWaterMarkConfig == null) {
                 mWaterMarkConfig = new WaterMarkConfig();
             }
-            instance.setText(mWaterMarkConfig.getContent());
-            instance.setTextColor(mWaterMarkConfig.getTextColor());
-            instance.setTextSize(mWaterMarkConfig.getTextSize());
-            instance.setRotation(mWaterMarkConfig.getRotation());
-            instance.show();
+            mInstance.setText(mWaterMarkConfig.getContent());
+            mInstance.setTextColor(mWaterMarkConfig.getTextColor());
+            mInstance.setTextSize(mWaterMarkConfig.getTextSize());
+            mInstance.setRotation(mWaterMarkConfig.getRotation());
+            mInstance.show();
         }
     }
 
@@ -135,6 +141,13 @@ public class WaterMarkManager {
         RemoteSpUtils remoteSpUtils = new RemoteSpUtils(context);
         mWaterMarkConfig = remoteSpUtils.getCurrentAppConfig(context.getPackageName());
         LogUtil.d(mWaterMarkConfig == null ? "null" : mWaterMarkConfig.toString());
+
+        remoteSpUtils.getSp().registerOnSharedPreferenceChangeListener((sharedPreferences, key) -> {
+            if(TextUtils.equals(key, SPContact.WATER_MARK_CONFIG)){
+                mWaterMarkConfig = remoteSpUtils.getCurrentAppConfig(context.getPackageName());
+                LogUtil.d("收到实时更新通知: " + (mWaterMarkConfig == null ? "null" : mWaterMarkConfig.toString()));
+            }
+        });
     }
 
 }

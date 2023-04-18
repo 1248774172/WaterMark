@@ -54,9 +54,9 @@ public class RemoteSpUtils {
         return mContext;
     }
 
-    private SharedPreferences getSp() {
-        MultiprocessSharedPreferences.setAuthority("com.xiaoer.watermark.provider");
-        return MultiprocessSharedPreferences.getSharedPreferences(getContext(), SP_NAME, Context.MODE_PRIVATE);
+    public SharedPreferences getSp() {
+        MultiProcessSharedPreferences.setAuthority("com.xiaoer.watermark.provider");
+        return MultiProcessSharedPreferences.getSharedPreferences(getContext(), SP_NAME, Context.MODE_PRIVATE);
     }
 
     public boolean isCanShowLog(){

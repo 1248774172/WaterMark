@@ -28,7 +28,7 @@
         </activity>
 
         <provider
-            android:name=".util.MultiprocessSharedPreferences"
+            android:name=".util.MultiProcessSharedPreferences"
             android:authorities="com.xiaoer.watermark.provider"
             android:exported="true" />
 

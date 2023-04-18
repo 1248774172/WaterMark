@@ -7,11 +7,9 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.google.gson.Gson;
+import com.xiaoer.watermark.BuildConfig;
 import com.xiaoer.watermark.bean.SPContact;
 import com.xiaoer.watermark.bean.WaterMarkConfig;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -43,23 +41,8 @@ public class LocalSpUtils {
         if(config == null){
             return;
         }
-        Set<String> water_mark_config = mSharedPreferences.getStringSet(WATER_MARK_CONFIG, null);
         HashSet<String> result = new HashSet<>();
-        if (water_mark_config == null || water_mark_config.size() == 0){
-            result.add(new Gson().toJson(config));
-        }else {
-            try {
-                JSONObject jsonObject;
-                for (String item : water_mark_config) {
-                    jsonObject = new JSONObject(item);
-                    if (config.configId.equals(jsonObject.optString("waterConfig"))) {
-                        result.add(new Gson().toJson(config));
-                    } else {
-                        result.add(item);
-                    }
-                }
-            } catch (JSONException e) {/**/}
-        }
+        result.add(new Gson().toJson(config));
         mSharedPreferences.edit().putStringSet(WATER_MARK_CONFIG, result).apply();
     }
 
@@ -85,6 +68,6 @@ public class LocalSpUtils {
     }
 
     public void setDebug(){
-        mSharedPreferences.edit().putBoolean(SPContact.IS_CAN_SHOW_LOG, true).apply();
+        mSharedPreferences.edit().putBoolean(SPContact.IS_CAN_SHOW_LOG, BuildConfig.DEBUG).apply();
     }
 }
