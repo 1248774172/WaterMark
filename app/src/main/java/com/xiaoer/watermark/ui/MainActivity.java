@@ -1,7 +1,6 @@
 package com.xiaoer.watermark.ui;
 
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
@@ -12,9 +11,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.xiaoer.watermark.BuildConfig;
 import com.xiaoer.watermark.R;
 import com.xiaoer.watermark.bean.WaterMarkConfig;
-import com.xiaoer.watermark.util.ConfigUtils;
+import com.xiaoer.watermark.util.LocalSpUtils;
+
+import java.util.List;
 
 public class MainActivity extends Activity {
 
@@ -27,23 +29,29 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initView();
+        if(BuildConfig.DEBUG){
+            LocalSpUtils.getInstance(getApplicationContext()).setDebug();
+        }
     }
 
     private void initView() {
-        Button btSave = (Button) findViewById(R.id.bt_save);
-        mEtContent = (EditText) findViewById(R.id.et_content);
-        mEtColor = (EditText) findViewById(R.id.et_color);
-        mEtSize = (EditText) findViewById(R.id.et_size);
+        Button btSave = findViewById(R.id.bt_save);
+        mEtContent = findViewById(R.id.et_content);
+        mEtColor = findViewById(R.id.et_color);
+        mEtSize = findViewById(R.id.et_size);
+
+        LocalSpUtils instance = LocalSpUtils.getInstance(getApplicationContext());
 
         WaterMarkConfig waterMarkConfig = new WaterMarkConfig();
-        waterMarkConfig.content = "jxj";
+        waterMarkConfig.content = "jxjTest";
         waterMarkConfig.configId = System.currentTimeMillis() + "";
         waterMarkConfig.addApp("com.jd.jxj");
         waterMarkConfig.addApp("com.xiaoer.watermark");
 
         btSave.setOnClickListener(v -> {
-            boolean addWaterMarkConfig = ConfigUtils.addWaterMarkConfig(waterMarkConfig);
-            Toast.makeText(getApplicationContext(),addWaterMarkConfig + "",Toast.LENGTH_SHORT).show();
+            instance.saveWaterMarkConfig(waterMarkConfig);
+            List<WaterMarkConfig> waterMarkConfigs = instance.getWaterMarkConfigs();
+            Toast.makeText(getApplicationContext(), waterMarkConfigs.toString() , Toast.LENGTH_SHORT).show();
         });
     }
 

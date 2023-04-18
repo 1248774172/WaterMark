@@ -60,4 +60,8 @@ public class WaterMarkConfig {
         packageList.add(packageName);
     }
 
+    @Override
+    public String toString() {
+        return "WaterMarkConfig{" + "content='" + content + '\'' + ", configId='" + configId + '\'' + ", packageList=" + packageList + '}';
+    }
 }

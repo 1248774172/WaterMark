@@ -12,9 +12,9 @@ import com.google.gson.Gson;
 import com.xiaoer.watermark.bean.AppConfig;
 import com.xiaoer.watermark.bean.WaterMarkConfig;
 import com.xiaoer.watermark.ui.Watermark;
-import com.xiaoer.watermark.util.ConfigUtils;
 import com.xiaoer.watermark.util.LogUtil;
 import com.xiaoer.watermark.util.NetWorkUtil;
+import com.xiaoer.watermark.util.RemoteSpUtils;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -131,7 +131,10 @@ public class WaterMarkManager {
     }
 
     private static void initWaterMarkConfig(Context context){
-        mWaterMarkConfig = ConfigUtils.getConfigByPackageName(context.getPackageName());
+        LogUtil.d("initWaterMarkConfig: " + context.getPackageName());
+        RemoteSpUtils remoteSpUtils = new RemoteSpUtils(context);
+        mWaterMarkConfig = remoteSpUtils.getCurrentAppConfig(context.getPackageName());
+        LogUtil.d(mWaterMarkConfig == null ? "null" : mWaterMarkConfig.toString());
     }
 
 }

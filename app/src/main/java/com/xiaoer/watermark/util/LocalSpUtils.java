@@ -1,10 +1,13 @@
 package com.xiaoer.watermark.util;
 
+import static com.xiaoer.watermark.bean.SPContact.SP_NAME;
+import static com.xiaoer.watermark.bean.SPContact.WATER_MARK_CONFIG;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.google.gson.Gson;
+import com.xiaoer.watermark.bean.SPContact;
 import com.xiaoer.watermark.bean.WaterMarkConfig;
 
 import org.json.JSONException;
@@ -16,10 +19,8 @@ import java.util.List;
 import java.util.Set;
 
 public class LocalSpUtils {
-    public static final String SP_NAME = "watermarkConfig";
-    public static final String WATER_MARK_CONFIG = "water_mark_config";
     private static volatile LocalSpUtils mInstance;
-    private SharedPreferences mSharedPreferences;
+    private static volatile SharedPreferences mSharedPreferences;
 
     private LocalSpUtils(Context context){
         if(mSharedPreferences == null){
@@ -81,5 +82,9 @@ public class LocalSpUtils {
             }
         }
         return null;
+    }
+
+    public void setDebug(){
+        mSharedPreferences.edit().putBoolean(SPContact.IS_CAN_SHOW_LOG, true).apply();
     }
 }

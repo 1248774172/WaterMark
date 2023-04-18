@@ -5,12 +5,12 @@ def packageNames = ['com.tencent.mm', 'com.jd.jxj', 'com.tencent.mobileqq']
 
 android {
     def realVersioncode = getVersionCode()
-    compileSdkVersion 28
+    compileSdkVersion 33
 
     defaultConfig {
         applicationId "com.xiaoer.watermark"
-        minSdkVersion 14
-        targetSdkVersion 28
+        minSdkVersion 24
+        targetSdkVersion 33
         versionCode realVersioncode
         versionName "1.0"
     }
@@ -47,6 +47,6 @@ def getVersionCode() {
 dependencies {
     // xposed
     compileOnly 'de.robv.android.xposed:api:82'
-    api 'com.google.code.gson:gson:2.8.6'
+    implementation 'com.google.code.gson:gson:2.10'
 
 }
