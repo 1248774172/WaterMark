@@ -6,17 +6,15 @@ import android.app.Application;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.text.TextUtils;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.xiaoer.watermark.bean.AppConfig;
-import com.xiaoer.watermark.bean.SPContact;
 import com.xiaoer.watermark.bean.WaterMarkConfig;
 import com.xiaoer.watermark.ui.Watermark;
 import com.xiaoer.watermark.util.LogUtil;
 import com.xiaoer.watermark.util.NetWorkUtil;
-import com.xiaoer.watermark.util.RemoteSpUtils;
+import com.xiaoer.watermark.util.RemoteSPUtils;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -138,16 +136,19 @@ public class WaterMarkManager {
 
     private static void initWaterMarkConfig(Context context){
         LogUtil.d("initWaterMarkConfig: " + context.getPackageName());
-        RemoteSpUtils remoteSpUtils = new RemoteSpUtils(context);
-        mWaterMarkConfig = remoteSpUtils.getCurrentAppConfig(context.getPackageName());
+        RemoteSPUtils instance = RemoteSPUtils.getInstance();
+        mWaterMarkConfig = instance.getCurrentAppConfig(context.getPackageName());
         LogUtil.d(mWaterMarkConfig == null ? "null" : mWaterMarkConfig.toString());
 
-        remoteSpUtils.getSp().registerOnSharedPreferenceChangeListener((sharedPreferences, key) -> {
-            if(TextUtils.equals(key, SPContact.WATER_MARK_CONFIG)){
-                mWaterMarkConfig = remoteSpUtils.getCurrentAppConfig(context.getPackageName());
-                LogUtil.d("收到实时更新通知: " + (mWaterMarkConfig == null ? "null" : mWaterMarkConfig.toString()));
-            }
-        });
+
+        // RemoteSpUtils remoteSpUtils = new RemoteSpUtils(context);
+        // mWaterMarkConfig = remoteSpUtils.getCurrentAppConfig(context.getPackageName());
+        // remoteSpUtils.getSp().registerOnSharedPreferenceChangeListener((sharedPreferences, key) -> {
+        //     if(TextUtils.equals(key, SPContact.WATER_MARK_CONFIG)){
+        //         mWaterMarkConfig = remoteSpUtils.getCurrentAppConfig(context.getPackageName());
+        //         LogUtil.d("收到实时更新通知: " + (mWaterMarkConfig == null ? "null" : mWaterMarkConfig.toString()));
+        //     }
+        // });
     }
 
 }

@@ -13,7 +13,7 @@ import android.widget.Toast;
 
 import com.xiaoer.watermark.R;
 import com.xiaoer.watermark.bean.WaterMarkConfig;
-import com.xiaoer.watermark.util.RemoteSpUtils;
+import com.xiaoer.watermark.util.LocalSpUtils;
 
 import java.util.List;
 
@@ -22,14 +22,14 @@ public class MainActivity extends Activity {
     private EditText mEtContent;
     private EditText mEtColor;
     private EditText mEtSize;
-    private RemoteSpUtils mSpUtils;
+    private LocalSpUtils mSpUtils;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initView();
-        mSpUtils = new RemoteSpUtils(getApplicationContext());
+        mSpUtils = new LocalSpUtils(getApplicationContext());
         mSpUtils.setDebug();
 
     }

@@ -4,6 +4,8 @@ import android.app.Application;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.xiaoer.watermark.BuildConfig;
+
 import de.robv.android.xposed.XposedBridge;
 
 public class LogUtil {
@@ -25,7 +27,7 @@ public class LogUtil {
 
     private static void print(String msg){
         if(canShowLog()){
-            if(mApplication != null && TextUtils.equals(mApplication.getPackageName(), "com.xiaoer.watermark")){
+            if(mApplication != null && TextUtils.equals(mApplication.getPackageName(), BuildConfig.APPLICATION_ID)){
                 XposedBridge.log(msg);
             }else {
                 Log.d("Xposed", msg);
@@ -38,7 +40,6 @@ public class LogUtil {
     }
 
     private static boolean isDebuggable() {
-        RemoteSpUtils remoteSpUtils = new RemoteSpUtils(mApplication);
-        return remoteSpUtils.isCanShowLog();
+        return RemoteSPUtils.getInstance().isCanShowLog();
     }
 }

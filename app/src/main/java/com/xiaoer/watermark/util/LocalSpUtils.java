@@ -20,10 +20,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class RemoteSpUtils {
+public class LocalSpUtils {
     private Context mContext;
 
-    public RemoteSpUtils(Context context) {
+    public LocalSpUtils(Context context) {
         this.mContext = context;
     }
 
@@ -82,9 +82,5 @@ public class RemoteSpUtils {
     public SharedPreferences getSp() {
         MultiProcessSharedPreferences.setAuthority("com.xiaoer.watermark.provider");
         return MultiProcessSharedPreferences.getSharedPreferences(getContext(), SP_NAME, Context.MODE_PRIVATE);
-    }
-
-    public boolean isCanShowLog(){
-        return getSp().getBoolean(IS_CAN_SHOW_LOG, false);
     }
 }
