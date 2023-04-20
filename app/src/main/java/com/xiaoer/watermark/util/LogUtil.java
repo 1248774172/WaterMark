@@ -5,6 +5,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.xiaoer.watermark.BuildConfig;
+import com.xiaoer.watermark.hook.ConfigHelper;
 
 import de.robv.android.xposed.XposedBridge;
 
@@ -40,6 +41,6 @@ public class LogUtil {
     }
 
     private static boolean isDebuggable() {
-        return RemoteSPUtils.getInstance().isCanShowLog();
+        return ConfigHelper.isCanShowLog(mApplication);
     }
 }

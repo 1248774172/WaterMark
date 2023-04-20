@@ -1,16 +1,19 @@
-apply plugin: 'com.android.application'
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+}
 
 
 def packageNames = ['com.tencent.mm', 'com.jd.jxj', 'com.tencent.mobileqq']
 
 android {
     def realVersioncode = getVersionCode()
-    compileSdkVersion 33
+    compileSdkVersion 31
 
     defaultConfig {
         applicationId "com.xiaoer.watermark"
-        minSdkVersion 24
-        targetSdkVersion 33
+        minSdkVersion 28
+        targetSdkVersion 31
         versionCode realVersioncode
         versionName "1.2"
     }
@@ -26,13 +29,13 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 }
-task(KillProcess) {
-    for (i in 0..<packageNames.size()) {
-        println "install 运行完成，结束 " + packageNames.get(i) + "进程"
-        def cmd = "adb shell am force-stop " + packageNames.get(i)
-        cmd.execute()
-    }
-}
+//task(KillProcess) {
+//    for (i in 0..<packageNames.size()) {
+//        println "install 运行完成，结束 " + packageNames.get(i) + "进程"
+//        def cmd = "adb shell am force-stop " + packageNames.get(i)
+//        cmd.execute()
+//    }
+//}
 
 def getVersionCode() {
     def propsFile = file('version.properties')
@@ -48,5 +51,7 @@ dependencies {
     // xposed
     compileOnly 'de.robv.android.xposed:api:82'
     implementation 'com.google.code.gson:gson:2.10'
+    implementation 'com.github.kyuubiran:EzXHelper:2.0.0'
+    implementation 'org.lsposed.hiddenapibypass:hiddenapibypass:4.2'
 
 }

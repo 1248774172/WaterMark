@@ -7,7 +7,6 @@ import android.view.ViewTreeObserver;
 import java.lang.ref.SoftReference;
 
 public class Watermark {
-    public static final int WATER_MARK_ID = 16909290;
     /**
      * 水印文本
      */

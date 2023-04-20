@@ -40,7 +40,10 @@
             android:value="给任意应用增加个性化水印" />
         <meta-data
             android:name="xposedminversion"
-            android:value="93" />
+            android:value="50" />
+        <meta-data
+            android:name="xposedscope"
+            android:resource="@array/xposed_scope" />
     </application>
 
 </manifest>

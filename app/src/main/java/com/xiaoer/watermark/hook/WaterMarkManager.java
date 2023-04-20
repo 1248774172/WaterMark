@@ -14,8 +14,8 @@ import com.xiaoer.watermark.bean.WaterMarkConfig;
 import com.xiaoer.watermark.ui.Watermark;
 import com.xiaoer.watermark.util.LogUtil;
 import com.xiaoer.watermark.util.NetWorkUtil;
-import com.xiaoer.watermark.util.RemoteSPUtils;
 
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class WaterMarkManager {
@@ -23,9 +23,18 @@ public class WaterMarkManager {
     private static WaterMarkManager mManager;
     private final AtomicBoolean canShow = new AtomicBoolean();
     private static WaterMarkConfig  mWaterMarkConfig;
-    private Watermark mInstance;
+    private final ConcurrentHashMap<String, Watermark> mHashMap = new ConcurrentHashMap<>();
 
     private WaterMarkManager(){
+    }
+
+    public static WaterMarkManager getInstance(){
+        if(mManager == null){
+            synchronized (WaterMarkManager.class){
+                mManager = new WaterMarkManager();
+            }
+        }
+        return mManager;
     }
 
     public static void init(Application application){
@@ -109,46 +118,30 @@ public class WaterMarkManager {
         initWaterMarkConfig(application);
     }
 
-    public static WaterMarkManager getInstance(){
-        if(mManager == null){
-            synchronized (WaterMarkManager.class){
-                mManager = new WaterMarkManager();
-            }
-        }
-        return mManager;
-    }
-
-    public void showWaterMark(Activity activity){
-        if (canShow.get()) {
-            if(mInstance == null){
-                mInstance = new Watermark(activity);
-            }
-            if (mWaterMarkConfig == null) {
-                mWaterMarkConfig = new WaterMarkConfig();
-            }
-            mInstance.setText(mWaterMarkConfig.getContent());
-            mInstance.setTextColor(mWaterMarkConfig.getTextColor());
-            mInstance.setTextSize(mWaterMarkConfig.getTextSize());
-            mInstance.setRotation(mWaterMarkConfig.getRotation());
-            mInstance.show();
-        }
-    }
-
     private static void initWaterMarkConfig(Context context){
         LogUtil.d("initWaterMarkConfig: " + context.getPackageName());
-        RemoteSPUtils instance = RemoteSPUtils.getInstance();
-        mWaterMarkConfig = instance.getCurrentAppConfig(context.getPackageName());
-        LogUtil.d(mWaterMarkConfig == null ? "null" : mWaterMarkConfig.toString());
+        mWaterMarkConfig = ConfigHelper.getCurrentAppConfig(context);
+    }
 
+    public void addWaterMark(Activity activity){
+        if (canShow.get()) {
+            Watermark watermark = null;
+            if (mHashMap.containsKey(activity.getLocalClassName())) {
+                watermark = mHashMap.get(activity.getLocalClassName());
+            }
+            if (watermark == null){
+                watermark = new Watermark(activity);
+                watermark.setText(mWaterMarkConfig.getContent());
+                watermark.setTextColor(mWaterMarkConfig.getTextColor());
+                watermark.setTextSize(mWaterMarkConfig.getTextSize());
+                watermark.setRotation(mWaterMarkConfig.getRotation());
+            }
+            watermark.show();
+        }
+    }
 
-        // RemoteSpUtils remoteSpUtils = new RemoteSpUtils(context);
-        // mWaterMarkConfig = remoteSpUtils.getCurrentAppConfig(context.getPackageName());
-        // remoteSpUtils.getSp().registerOnSharedPreferenceChangeListener((sharedPreferences, key) -> {
-        //     if(TextUtils.equals(key, SPContact.WATER_MARK_CONFIG)){
-        //         mWaterMarkConfig = remoteSpUtils.getCurrentAppConfig(context.getPackageName());
-        //         LogUtil.d("收到实时更新通知: " + (mWaterMarkConfig == null ? "null" : mWaterMarkConfig.toString()));
-        //     }
-        // });
+    public void removeWaterMark(Activity activity){
+        mHashMap.remove(activity.getLocalClassName());
     }
 
 }

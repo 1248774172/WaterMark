@@ -13,25 +13,21 @@ import android.widget.Toast;
 
 import com.xiaoer.watermark.R;
 import com.xiaoer.watermark.bean.WaterMarkConfig;
-import com.xiaoer.watermark.util.LocalSpUtils;
-
-import java.util.List;
+import com.xiaoer.watermark.hook.ConfigHelper;
 
 public class MainActivity extends Activity {
 
     private EditText mEtContent;
     private EditText mEtColor;
     private EditText mEtSize;
-    private LocalSpUtils mSpUtils;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initView();
-        mSpUtils = new LocalSpUtils(getApplicationContext());
-        mSpUtils.setDebug();
 
+        ConfigHelper.setDebug(getApplicationContext());
     }
 
     private void initView() {
@@ -48,9 +44,12 @@ public class MainActivity extends Activity {
         waterMarkConfig.addApp("com.xiaoer.watermark");
 
         btSave.setOnClickListener(v -> {
-            mSpUtils.saveWaterMarkConfig(waterMarkConfig);
-            List<WaterMarkConfig> waterMarkConfigs = mSpUtils.getWaterMarkConfigs();
-            Toast.makeText(getApplicationContext(), waterMarkConfigs.toString() , Toast.LENGTH_SHORT).show();
+            // mSpUtils.saveWaterMarkConfig(waterMarkConfig);
+            // FileUtils.getInstance().getWaterMarkConfigs(getApplicationContext());
+            boolean success = ConfigHelper.saveWaterMarkConfig(getApplicationContext(), waterMarkConfig);
+            Toast.makeText(getApplicationContext(),success + "",Toast.LENGTH_SHORT).show();
+            // List<WaterMarkConfig> waterMarkConfigs = FileUtils.getInstance().getWaterMarkConfigs(getApplicationContext());
+            // Toast.makeText(getApplicationContext(), waterMarkConfigs.toString() , Toast.LENGTH_SHORT).show();
         });
     }
 
@@ -93,8 +92,7 @@ public class MainActivity extends Activity {
     }
 
     public void hideInputMethod(Activity activity, View view) {
-        InputMethodManager imm = (InputMethodManager) activity.getSystemService(
-                Context.INPUT_METHOD_SERVICE);
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
         if (imm != null) {
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }

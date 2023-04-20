@@ -4,32 +4,49 @@ import android.app.Activity;
 import android.app.Application;
 import android.os.Bundle;
 
+import com.github.kyuubiran.ezxhelper.EzXHelper;
+import com.xiaoer.watermark.util.FileUtils;
 import com.xiaoer.watermark.util.LogUtil;
 import com.xiaoer.watermark.util.ProcessUtil;
 
 import de.robv.android.xposed.IXposedHookLoadPackage;
+import de.robv.android.xposed.IXposedHookZygoteInit;
 import de.robv.android.xposed.XC_MethodHook;
+import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 
-public class AddWaterMark implements IXposedHookLoadPackage {
+public class AddWaterMark implements IXposedHookLoadPackage, IXposedHookZygoteInit {
     private static Application mApplication;
+
     @Override
-    public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) {
-        XposedHelpers.findAndHookMethod("android.app.Application", lpparam.classLoader, "onCreate",
-                                   new XC_MethodHook() {
-                                            @Override
-                                            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                                                super.afterHookedMethod(param);
-                                                mApplication = (Application) param.thisObject;
-                                                if (ProcessUtil.isMainProcess()) {
-                                                    WaterMarkManager.init(mApplication);
-                                                    LogUtil.init(mApplication);
-                                                    addListener(mApplication);
-                                                }
-                                            }
-                                        });
+    public void initZygote(StartupParam startupParam) {
+        EzXHelper.initZygote(startupParam);
+        FileUtils.getInstance().initZygote();
+    }
+    @Override
+    public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) throws ClassNotFoundException {
+        if (lpparam != null){
+            if (lpparam.packageName.equals("android")) {
+                LogUtil.d("hook android XposedBridge.getXposedVersion(): " + XposedBridge.getXposedVersion());
+                EzXHelper.initHandleLoadPackage(lpparam);
+                FileUtils.getInstance().hookAMS(lpparam);
+            }
+
+            XposedHelpers.findAndHookMethod("android.app.Application", lpparam.classLoader, "onCreate", new XC_MethodHook() {
+                @Override
+                protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                    super.afterHookedMethod(param);
+                    mApplication = (Application) param.thisObject;
+                    if (ProcessUtil.isMainProcess()) {
+                        WaterMarkManager.init(mApplication);
+                        LogUtil.init(mApplication);
+                        addListener(mApplication);
+                    }
+                }
+            });
+        }
     }
 
     public static void addListener(Application application){
@@ -45,7 +62,7 @@ public class AddWaterMark implements IXposedHookLoadPackage {
 
             @Override
             public void onActivityResumed(Activity activity) {
-                WaterMarkManager.getInstance().showWaterMark(activity);
+                WaterMarkManager.getInstance().addWaterMark(activity);
             }
 
             @Override
@@ -65,7 +82,7 @@ public class AddWaterMark implements IXposedHookLoadPackage {
 
             @Override
             public void onActivityDestroyed(Activity activity) {
-
+                WaterMarkManager.getInstance().removeWaterMark(activity);
             }
         });
     }
@@ -73,4 +90,5 @@ public class AddWaterMark implements IXposedHookLoadPackage {
     public static Application getApplication(){
         return mApplication;
     }
+
 }
