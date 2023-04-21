@@ -34,6 +34,9 @@ public class AddWaterMark implements IXposedHookLoadPackage, IXposedHookZygoteIn
                 FileUtils.getInstance().hookAMS(lpparam);
             }
 
+            Class<?> loadClass = lpparam.classLoader.loadClass("com.xiaoer.watermark.hook.ConfigHelper");
+            XposedHelpers.setStaticBooleanField(loadClass, "canUseSp", XposedBridge.getXposedVersion() >= 93);
+
             XposedHelpers.findAndHookMethod("android.app.Application", lpparam.classLoader, "onCreate", new XC_MethodHook() {
                 @Override
                 protected void afterHookedMethod(MethodHookParam param) throws Throwable {

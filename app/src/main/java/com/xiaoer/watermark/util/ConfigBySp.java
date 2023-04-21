@@ -10,6 +10,7 @@ import android.content.SharedPreferences;
 import android.text.TextUtils;
 
 import com.google.gson.Gson;
+import com.xiaoer.watermark.BuildConfig;
 import com.xiaoer.watermark.bean.AppConfig;
 import com.xiaoer.watermark.bean.SPContact;
 import com.xiaoer.watermark.bean.WaterMarkConfig;
@@ -18,6 +19,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import de.robv.android.xposed.XSharedPreferences;
 
 public class ConfigBySp {
 
@@ -37,10 +40,10 @@ public class ConfigBySp {
         ArrayList<WaterMarkConfig> result = new ArrayList<>();
         if (stringSet != null && stringSet.size() > 0) {
             for (String item : stringSet) {
-                LogUtil.d("ConfigBySp getWaterMarkConfigs: " + item);
                 result.add(new Gson().fromJson(item, WaterMarkConfig.class));
             }
         }
+        LogUtil.d("ConfigBySp getWaterMarkConfigs: " + result);
         return result;
     }
 
@@ -71,6 +74,7 @@ public class ConfigBySp {
                 }
             }
         }
+        LogUtil.d("saveWaterMarkConfig:" + result);
         getSp(context).edit().putStringSet(WATER_MARK_CONFIG, result).apply();
     }
 
@@ -87,8 +91,16 @@ public class ConfigBySp {
         if(mSharedPreferences != null){
             return mSharedPreferences;
         }
-        MultiProcessSharedPreferences.setAuthority("com.xiaoer.watermark.provider");
-        mSharedPreferences = MultiProcessSharedPreferences.getSharedPreferences(context, WATERMARK_CONFIG, Context.MODE_PRIVATE);
+        if(isXposedModule(context)){
+            MultiProcessSharedPreferences.setAuthority("com.xiaoer.watermark.provider");
+            mSharedPreferences = MultiProcessSharedPreferences.getSharedPreferences(context, WATERMARK_CONFIG, Context.MODE_PRIVATE);
+        }else {
+            mSharedPreferences = new XSharedPreferences(BuildConfig.APPLICATION_ID, WATERMARK_CONFIG);
+        }
         return mSharedPreferences;
+    }
+
+    private static boolean isXposedModule(Context context){
+        return BuildConfig.APPLICATION_ID.equals(context.getPackageName());
     }
 }
