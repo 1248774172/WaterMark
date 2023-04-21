@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
+import java.util.concurrent.ConcurrentHashMap;
 
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
@@ -39,6 +40,8 @@ public class FileUtils {
     public static final String ACTION_WRITE_FILE = "writeFile";
 
     public static final String ACTION_DELETE_FILE = "deleteFile";
+
+    private static final ConcurrentHashMap<String, String> mFileDataCache = new ConcurrentHashMap<>();
 
     private String dataDir;
 
@@ -114,7 +117,11 @@ public class FileUtils {
         Uri.Builder builder = Uri.parse(SCHEME + "://hook").buildUpon();
         builder.appendQueryParameter(KEY_ACTION, ACTION_READ_FILE);
         builder.appendQueryParameter(KEY_FILE_NAME, fileName);
-        return (String) mySetProcessMemoryTrimLevel(context, builder.toString());
+        String result = "";
+        try {
+            result = (String) mySetProcessMemoryTrimLevel(context, builder.toString());
+        }catch (Exception e){/**/}
+        return result;
     }
 
     public boolean deleteFile(Context context, String fileName){
@@ -139,25 +146,31 @@ public class FileUtils {
     }
 
     private boolean saveFileImpl(String fileName, String content) {
+        if(mFileDataCache.containsKey(fileName) && TextUtils.equals(mFileDataCache.get(fileName), content)){
+            logD("saveFileImpl: has same content, don't save  " + fileName);
+            return true;
+        }
         File jsonFile = getFile(fileName);
         if (!jsonFile.exists()) {
             File jsonFileDirectory = new File(dataDir + "/");
             jsonFileDirectory.mkdirs();
         }
-        logD("FileUtils saveFile: " + content);
+        logD("saveFile: " + content);
         try {
             FileOutputStream outputStream = new FileOutputStream(jsonFile);
             outputStream.write(content.getBytes());
             outputStream.close();
+            mFileDataCache.put(fileName, content);
             return true;
         } catch (IOException e) {
-            logE("FileUtils saveFile: " + e.getCause());
+            logE("saveFile: " + e.getCause());
             e.printStackTrace();
         }
         return false;
     }
 
     private boolean deleteFileImpl(String fileName){
+        mFileDataCache.remove(fileName);
         File jsonFile = getFile(fileName);
         if (jsonFile.exists()) {
             return jsonFile.delete();
@@ -166,6 +179,10 @@ public class FileUtils {
     }
 
     private String readFileImpl(String fileName){
+        if (mFileDataCache.contains(fileName)){
+            logD("readFile: " + fileName + " from cache");
+            return mFileDataCache.get(fileName);
+        }
         File jsonFile = getFile(fileName);
         String result = "";
         try {
@@ -178,11 +195,12 @@ public class FileUtils {
                     output.write(buffer, 0, n);
                 }
                 result = new String(output.toByteArray(), StandardCharsets.UTF_8);
+                mFileDataCache.put(fileName, result);
             }
         } catch (Exception e) {
-            logE("FileUtils get "+ jsonFile.getName() + " err: " + e.getCause());
+            logE("readFileImpl get "+ jsonFile.getName() + " err: " + e.getCause());
         }
-        logD("FileUtils get "+ jsonFile.getName() + " success: " + result);
+        logD("readFileImpl get "+ jsonFile.getName() + " success: " + result);
         return result;
     }
 
@@ -191,11 +209,11 @@ public class FileUtils {
     }
 
     private void logD(String message){
-        Log.d("yys", message);
+        Log.d("Xposed", "FileUtils " + message);
     }
 
     private void logE(String message){
-        Log.e("yys", message);
+        Log.e("Xposed", "FileUtils " + message);
     }
 
 }

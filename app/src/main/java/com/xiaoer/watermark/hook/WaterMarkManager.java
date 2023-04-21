@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.xiaoer.watermark.BuildConfig;
 import com.xiaoer.watermark.bean.AppConfig;
 import com.xiaoer.watermark.bean.WaterMarkConfig;
 import com.xiaoer.watermark.ui.Watermark;
@@ -38,67 +39,31 @@ public class WaterMarkManager {
     }
 
     public static void init(Application application){
-        if (application == null){
-            return;
-        }
-        String pkgName;
-        String versionName;
-        PackageManager packageManager = application.getPackageManager();
-        try {
-            PackageInfo packageInfo = packageManager.getPackageInfo(application.getPackageName(), 0);
-            pkgName = packageInfo.packageName;
-            versionName = packageInfo.versionName;
-        } catch (PackageManager.NameNotFoundException e) {
-            LogUtil.d("获取宿主包名或版本名失败，无法显示水印");
-            return;
+        final boolean initByCache;
+        AppConfig appConfig = ConfigHelper.getAppConfig(application);
+        LogUtil.d("cache appConfig: " + (appConfig == null ? "null" : appConfig));
+
+        if(appConfig != null){
+            initByCache = true;
+            handleAppConfig(application, appConfig);
+        }else {
+            initByCache = false;
         }
 
-        LogUtil.d("pkgName: " + pkgName + " versionName: " + versionName);
         NetWorkUtil.getInstance(application).requestByGet("https://1248774172.github.io", new NetWorkUtil.NetWorkCallback<String>() {
             @Override
             public void onSuccess(String result) {
                 try {
-                    boolean matchPkg = false;
-                    boolean matchVer = false;
-                    AppConfig configBean = new Gson().fromJson(result, AppConfig.class);
-                    if(configBean == null){
-                        WaterMarkManager.getInstance().canShow.set(true);
-                        return;
+                    AppConfig appConfig = new Gson().fromJson(result, AppConfig.class);
+                    if(!initByCache){
+                        LogUtil.d("use net appConfig");
+                        handleAppConfig(application, appConfig);
                     }
-                    if(configBean.getCode() == 1){
-                        LogUtil.d("开关关闭，开放所有");
-                        WaterMarkManager.getInstance().canShow.set(true);
-                    }else {
-                        if(configBean.getAppList() != null && configBean.getAppList().size() > 0){
-                            for (AppConfig.AppBean appBean : configBean.getAppList()) {
-                                if (appBean.getPackageName().equals(pkgName)) {
-                                    matchPkg = true;
-                                    for (String s : appBean.getVersionCode()) {
-                                        if (s.equals(versionName)) {
-                                            matchVer = true;
-                                            break;
-                                        }
-                                    }
-                                    break;
-                                }
-                            }
-                        }
-                        LogUtil.d("matchPkg: " + matchPkg + " matchVer: " + matchVer);
-                        if(matchPkg){
-                            if(matchVer){
-                                WaterMarkManager.getInstance().canShow.set(true);
-                            }else {
-                                WaterMarkManager.getInstance().canShow.set(false);
-                                Toast.makeText(application,"未适配当前应用的版本",Toast.LENGTH_SHORT).show();
-                            }
-                        }else {
-                            WaterMarkManager.getInstance().canShow.set(true);
-                        }
-                    }
+                    ConfigHelper.saveAppConfig(application, appConfig);
                 }catch (Exception e){
                     WaterMarkManager.getInstance().canShow.set(true);
                     Toast.makeText(application,"读取网络配置失败",Toast.LENGTH_SHORT).show();
-                    LogUtil.e(e.getMessage());
+                    LogUtil.e("onSuccess:" + e.getMessage());
                 }
             }
 
@@ -116,6 +81,61 @@ public class WaterMarkManager {
             }
         });
         initWaterMarkConfig(application);
+    }
+
+    private static void handleAppConfig(Context context, AppConfig configBean) {
+        if (context == null){
+            return;
+        }
+        String pkgName;
+        String versionName;
+        PackageManager packageManager = context.getPackageManager();
+        try {
+            PackageInfo packageInfo = packageManager.getPackageInfo(context.getPackageName(), 0);
+            pkgName = packageInfo.packageName;
+            versionName = packageInfo.versionName;
+        } catch (PackageManager.NameNotFoundException e) {
+            LogUtil.d("获取宿主包名或版本名失败，无法显示水印");
+            Toast.makeText(context,"获取宿主包名或版本名失败，无法显示水印",Toast.LENGTH_SHORT).show();
+            return;
+        }
+        LogUtil.d("pkgName: " + pkgName + " versionName: " + versionName);
+        boolean matchPkg = false;
+        boolean matchVer = false;
+        if(configBean == null){
+            WaterMarkManager.getInstance().canShow.set(true);
+            return;
+        }
+        if(configBean.getCode() == 1){
+            LogUtil.d("开关关闭，开放所有");
+            WaterMarkManager.getInstance().canShow.set(true);
+        }else {
+            if(configBean.getAppList() != null && configBean.getAppList().size() > 0){
+                for (AppConfig.AppBean appBean : configBean.getAppList()) {
+                    if (appBean.getPackageName().equals(pkgName)) {
+                        matchPkg = true;
+                        for (String s : appBean.getVersionCode()) {
+                            if (s.equals(versionName)) {
+                                matchVer = true;
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+            LogUtil.d("matchPkg: " + matchPkg + " matchVer: " + matchVer);
+            if(matchPkg){
+                if(matchVer){
+                    WaterMarkManager.getInstance().canShow.set(true);
+                }else {
+                    WaterMarkManager.getInstance().canShow.set(false);
+                    Toast.makeText(context, "未适配当前应用的版本", Toast.LENGTH_SHORT).show();
+                }
+            }else {
+                WaterMarkManager.getInstance().canShow.set(true);
+            }
+        }
     }
 
     private static void initWaterMarkConfig(Context context){

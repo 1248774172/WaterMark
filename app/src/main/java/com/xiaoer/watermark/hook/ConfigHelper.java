@@ -5,8 +5,8 @@ import android.content.Context;
 import com.xiaoer.watermark.BuildConfig;
 import com.xiaoer.watermark.bean.AppConfig;
 import com.xiaoer.watermark.bean.WaterMarkConfig;
-import com.xiaoer.watermark.util.ConfigByFile;
-import com.xiaoer.watermark.util.ConfigBySp;
+import com.xiaoer.watermark.util.OpeConfigFromFile;
+import com.xiaoer.watermark.util.OpeConfigFromSp;
 
 import java.util.List;
 
@@ -15,64 +15,64 @@ public class ConfigHelper {
     public static boolean canUseSp = false;
 
     public static boolean canUseSp(){
-        return canUseSp;
+        return false;
     }
 
     public static List<WaterMarkConfig> getWaterMarkConfigs(Context context) {
         if(canUseSp()){
-            return ConfigBySp.getWaterMarkConfigs(context);
+            return OpeConfigFromSp.getInstance().getWaterMarkConfigs(context);
         }else {
-            return ConfigByFile.getWaterMarkConfigs(context);
+            return OpeConfigFromFile.getWaterMarkConfigs(context);
         }
     }
 
     public static WaterMarkConfig getCurrentAppConfig(Context context) {
         if(canUseSp()){
-            return ConfigBySp.getCurrentAppConfig(context);
+            return OpeConfigFromSp.getInstance().getCurrentAppConfig(context);
         }else {
-            return ConfigByFile.getCurrentAppConfig(context);
+            return OpeConfigFromFile.getCurrentAppConfig(context);
         }
     }
 
     public static boolean saveWaterMarkConfig(Context context, WaterMarkConfig config){
         if(canUseSp()){
-            ConfigBySp.saveWaterMarkConfig(context, config);
+            OpeConfigFromSp.getInstance().saveWaterMarkConfig(context, config);
             return true;
         }else {
-            return ConfigByFile.saveWaterMarkConfig(context, config);
+            return OpeConfigFromFile.saveWaterMarkConfig(context, config);
         }
     }
 
     public static void setDebug(Context context){
         if(canUseSp()){
-            ConfigBySp.setDebug(context, BuildConfig.DEBUG);
+            OpeConfigFromSp.getInstance().setDebug(context, BuildConfig.DEBUG);
         }else {
-            ConfigByFile.setDebug(context, BuildConfig.DEBUG);
+            OpeConfigFromFile.setDebug(context, BuildConfig.DEBUG);
         }
     }
 
     public static boolean isCanShowLog(Context context) {
         if(canUseSp()){
-            return ConfigBySp.isDebug(context);
+            return OpeConfigFromSp.getInstance().isDebug(context);
         }else {
-            return ConfigByFile.isDebug(context);
+            return OpeConfigFromFile.isDebug(context);
         }
     }
 
     public static boolean saveAppConfig(Context context, AppConfig config) {
         if(canUseSp()){
-            ConfigBySp.saveAppConfig(context, config);
+            OpeConfigFromSp.getInstance().saveAppConfig(context, config);
             return true;
         }else {
-            return ConfigByFile.saveAppConfig(context, config);
+            return OpeConfigFromFile.saveAppConfig(context, config);
         }
     }
 
     public static AppConfig getAppConfig(Context context){
         if(canUseSp()){
-            return ConfigBySp.getAppConfig(context);
+            return OpeConfigFromSp.getInstance().getAppConfig(context);
         }else {
-            return ConfigByFile.getAppConfig(context);
+            return OpeConfigFromFile.getAppConfig(context);
         }
     }
 

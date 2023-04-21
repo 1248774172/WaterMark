@@ -42,4 +42,9 @@ public class AppConfig {
             this.versionCode = versionCode;
         }
     }
+
+    @Override
+    public String toString() {
+        return "AppConfig{" + "code=" + code + ", appList=" + appList + '}';
+    }
 }

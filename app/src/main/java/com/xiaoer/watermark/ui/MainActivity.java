@@ -11,11 +11,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.xiaoer.watermark.R;
 import com.xiaoer.watermark.bean.WaterMarkConfig;
 import com.xiaoer.watermark.hook.ConfigHelper;
 
-public class MainActivity extends Activity {
+public class MainActivity extends AppCompatActivity {
 
     private EditText mEtContent;
     private EditText mEtColor;
@@ -26,8 +28,6 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initView();
-
-        ConfigHelper.setDebug(getApplicationContext());
     }
 
     private void initView() {

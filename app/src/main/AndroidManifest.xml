@@ -15,7 +15,7 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:networkSecurityConfig="@xml/network_config"
-        android:theme="@android:style/Theme.Material.Light.DarkActionBar">
+        android:theme="@style/Theme.AppCompat.DayNight.DarkActionBar">
 
         <activity
             android:name=".ui.MainActivity"
@@ -26,11 +26,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <provider
-            android:name=".util.MultiProcessSharedPreferences"
-            android:authorities="com.xiaoer.watermark.provider"
-            android:exported="true" />
 
         <meta-data
             android:name="xposedmodule"

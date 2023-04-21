@@ -15,7 +15,7 @@ import com.xiaoer.watermark.bean.WaterMarkConfig;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ConfigByFile {
+public class OpeConfigFromFile {
 
     public static boolean saveAppConfig(Context context, AppConfig config) {
         return FileUtils.getInstance().saveFile(context, APP_CONFIG, new Gson().toJson(config));
@@ -40,12 +40,12 @@ public class ConfigByFile {
                 }
             }
         }
-        return FileUtils.getInstance().saveFile(context, SPContact.WATERMARK_CONFIG, gson.toJson(result));
+        return FileUtils.getInstance().saveFile(context, SPContact.WATER_MARK_CONFIG_FILE_NAME, gson.toJson(result));
     }
 
 
     public static List<WaterMarkConfig> getWaterMarkConfigs(Context context) {
-        String json = FileUtils.getInstance().readFile(context, SPContact.WATERMARK_CONFIG);
+        String json = FileUtils.getInstance().readFile(context, SPContact.WATER_MARK_CONFIG_FILE_NAME);
         ArrayList<WaterMarkConfig> result = new Gson().fromJson(json, new TypeToken<ArrayList<WaterMarkConfig>>() {});
         return result == null ? new ArrayList<>() : result;
     }
@@ -62,7 +62,9 @@ public class ConfigByFile {
 
     public static void setDebug(Context context, boolean isDebuggable) {
         if (isDebuggable) {
-            FileUtils.getInstance().saveFile(context, DEBUGGABLE, "1");
+            if(!isDebug(context)){
+                FileUtils.getInstance().saveFile(context, DEBUGGABLE, "1");
+            }
         }else {
             FileUtils.getInstance().deleteFile(context, DEBUGGABLE);
         }
