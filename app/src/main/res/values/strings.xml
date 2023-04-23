@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">WaterMark</string>
+    <string name="card_title_activated">模块已经激活</string>
+    <string name="card_title_not_activated">模块未激活</string>
+    <string name="card_detail_activated">模块启动成功</string>
+    <string name="card_detail_not_activated">请检查你是否已经正确激活了模块</string>
 </resources>

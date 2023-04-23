@@ -11,12 +11,10 @@ import de.robv.android.xposed.XposedBridge;
 
 public class LogUtil {
     private static Application mApplication;
-    private static boolean canShowLog = true;
     private LogUtil(){}
 
     public static void init(Application application){
         mApplication = application;
-        canShowLog = canShowLog();
     }
     public static void d(String log) {
         print("yys " + log);
@@ -37,10 +35,6 @@ public class LogUtil {
     }
 
     private static boolean canShowLog(){
-        return canShowLog || (mApplication != null && isDebuggable());
-    }
-
-    private static boolean isDebuggable() {
-        return ConfigHelper.isCanShowLog(mApplication);
+        return BuildConfig.DEBUG;
     }
 }

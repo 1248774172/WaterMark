@@ -1,8 +1,9 @@
 package com.xiaoer.watermark.bean;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class AppConfig {
+public class AppConfig implements Serializable {
     private int code;
     private ArrayList<AppBean> appList;
 

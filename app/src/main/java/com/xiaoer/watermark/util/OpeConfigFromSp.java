@@ -43,12 +43,14 @@ public class OpeConfigFromSp {
 
 
     public void saveAppConfig(Context context, AppConfig config) {
-        LogUtil.d("saveAppConfig:" + config);
+        LogUtil.d("OpeConfigFromSp saveAppConfig:" + config);
         getEdit(context).putString(APP_CONFIG, new Gson().toJson(config)).apply();
     }
 
     public AppConfig getAppConfig(Context context){
-        return new Gson().fromJson(getSp(context).getString(APP_CONFIG, ""), AppConfig.class);
+        AppConfig appConfig = new Gson().fromJson(getSp(context).getString(APP_CONFIG, ""), AppConfig.class);
+        LogUtil.d("OpeConfigFromSp cache appConfig: " + (appConfig == null ? "null" : appConfig));
+        return appConfig;
     }
 
     public List<WaterMarkConfig> getWaterMarkConfigs(Context context) {
@@ -67,7 +69,7 @@ public class OpeConfigFromSp {
     public WaterMarkConfig getCurrentAppConfig(Context context) {
         List<WaterMarkConfig> waterMarkConfigs = getWaterMarkConfigs(context);
         for (WaterMarkConfig item : waterMarkConfigs) {
-            if (item.packageList != null && item.packageList.contains(context.getPackageName())) {
+            if (item.isOpen() && item.packageList != null && item.packageList.contains(context.getPackageName())) {
                 return item;
             }
         }
@@ -81,26 +83,30 @@ public class OpeConfigFromSp {
         List<WaterMarkConfig> waterMarkConfigs = getWaterMarkConfigs(context);
         HashSet<String> result = new HashSet<>();
         Gson gson = new Gson();
-        if(waterMarkConfigs.size() == 0){
-            result.add(gson.toJson(config));
-        }else {
-            for (WaterMarkConfig waterMarkConfig : waterMarkConfigs) {
-                result.add(gson.toJson(config));
-                if (!TextUtils.equals(waterMarkConfig.configId, config.configId)) {
-                    result.add(gson.toJson(waterMarkConfig));
-                }
+        result.add(gson.toJson(config));
+        for (WaterMarkConfig waterMarkConfig : waterMarkConfigs) {
+            if (!TextUtils.equals(waterMarkConfig.configId, config.configId)) {
+                result.add(gson.toJson(waterMarkConfig));
             }
         }
         LogUtil.d("saveWaterMarkConfig:" + result);
         getEdit(context).putStringSet(WATER_MARK_CONFIG_KEY, result).apply();
     }
 
-    public void setDebug(Context context,boolean isDebuggable){
-        getEdit(context).putBoolean(SPContact.IS_CAN_SHOW_LOG, isDebuggable).apply();
-    }
-
-    public boolean isDebug(Context context){
-        return getSp(context).getBoolean(SPContact.IS_CAN_SHOW_LOG, false);
+    public void deleteWaterMarkConfig(Context context, WaterMarkConfig config){
+        if(config == null){
+            return;
+        }
+        List<WaterMarkConfig> waterMarkConfigs = getWaterMarkConfigs(context);
+        HashSet<String> result = new HashSet<>();
+        Gson gson = new Gson();
+        for (WaterMarkConfig waterMarkConfig : waterMarkConfigs) {
+            if (!TextUtils.equals(waterMarkConfig.configId, config.configId)) {
+                result.add(gson.toJson(waterMarkConfig));
+            }
+        }
+        LogUtil.d("deleteWaterMarkConfig:" + result);
+        getEdit(context).putStringSet(WATER_MARK_CONFIG_KEY, result).apply();
     }
 
     public SharedPreferences getSp(Context context) {

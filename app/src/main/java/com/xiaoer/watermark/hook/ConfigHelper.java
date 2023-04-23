@@ -1,6 +1,7 @@
 package com.xiaoer.watermark.hook;
 
 import android.content.Context;
+import android.widget.Toast;
 
 import com.xiaoer.watermark.BuildConfig;
 import com.xiaoer.watermark.bean.AppConfig;
@@ -39,23 +40,28 @@ public class ConfigHelper {
             OpeConfigFromSp.getInstance().saveWaterMarkConfig(context, config);
             return true;
         }else {
-            return OpeConfigFromFile.saveWaterMarkConfig(context, config);
+            boolean success = OpeConfigFromFile.saveWaterMarkConfig(context, config);
+            if(success){
+                Toast.makeText(context, "保存成功", Toast.LENGTH_SHORT).show();
+            }else {
+                Toast.makeText(context,"保存失败",Toast.LENGTH_SHORT).show();
+            }
+            return success;
         }
     }
 
-    public static void setDebug(Context context){
+    public static boolean deleteWaterMarkConfig(Context context, WaterMarkConfig config){
         if(canUseSp()){
-            OpeConfigFromSp.getInstance().setDebug(context, BuildConfig.DEBUG);
+            OpeConfigFromSp.getInstance().deleteWaterMarkConfig(context, config);
+            return true;
         }else {
-            OpeConfigFromFile.setDebug(context, BuildConfig.DEBUG);
-        }
-    }
-
-    public static boolean isCanShowLog(Context context) {
-        if(canUseSp()){
-            return OpeConfigFromSp.getInstance().isDebug(context);
-        }else {
-            return OpeConfigFromFile.isDebug(context);
+            boolean success = OpeConfigFromFile.deleteWaterMarkConfig(context, config);
+            if(success){
+                Toast.makeText(context, "删除成功", Toast.LENGTH_SHORT).show();
+            }else {
+                Toast.makeText(context,"删除失败",Toast.LENGTH_SHORT).show();
+            }
+            return success;
         }
     }
 
@@ -76,4 +82,7 @@ public class ConfigHelper {
         }
     }
 
+    public static boolean isModuleActivated() {
+        return false;
+    }
 }

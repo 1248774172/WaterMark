@@ -7,6 +7,7 @@ import android.graphics.Paint;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.Drawable;
 
+import com.xiaoer.watermark.bean.WaterMarkConfig;
 import com.xiaoer.watermark.util.DensityUtils;
 
 public class WatermarkDrawable extends Drawable {
@@ -33,6 +34,15 @@ public class WatermarkDrawable extends Drawable {
     public WatermarkDrawable(Context context) {
         this.mPaint = new Paint();
         this.mContext = context;
+    }
+
+    public WatermarkDrawable(Context context, WaterMarkConfig waterMarkConfig) {
+        this.mPaint = new Paint();
+        this.mContext = context;
+        this.mText = waterMarkConfig.getContent();
+        this.mTextColor = waterMarkConfig.getTextColor();
+        this.mTextSize = waterMarkConfig.getTextSize();
+        this.mRotation = waterMarkConfig.getRotation();
     }
 
     @Override

@@ -3,14 +3,25 @@ package com.xiaoer.watermark.bean;
 import android.graphics.Color;
 import android.text.TextUtils;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class WaterMarkConfig {
+public class WaterMarkConfig implements Serializable {
     public int textColor;
     public String content;
     public int textSize;
     public float rotation;
     public String configId;
+
+    public boolean isOpen;
+
+    public boolean isOpen() {
+        return isOpen;
+    }
+
+    public void setOpen(boolean open) {
+        isOpen = open;
+    }
 
     public ArrayList<String> packageList = new ArrayList<>();
     public int getTextColor() {

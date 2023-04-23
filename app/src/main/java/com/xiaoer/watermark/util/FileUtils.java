@@ -17,6 +17,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
@@ -89,8 +90,13 @@ public class FileUtils {
                 String fileName = data.getQueryParameter(KEY_FILE_NAME);
 
                 if(TextUtils.equals(action, ACTION_READ_FILE)){
-                    String fileData = readFileImpl(fileName);
-                    param.setThrowable(new IllegalArgumentException(fileData));
+                    if (mFileDataCache.containsKey(fileName)){
+                        logD("readFile: " + fileName + " from cache");
+                        param.setThrowable(new IllegalArgumentException(mFileDataCache.get(fileName)));
+                        readFileImpl(fileName);
+                    }else {
+                        param.setThrowable(new IllegalArgumentException(readFileImpl(fileName)));
+                    }
 
                 }else if(TextUtils.equals(action, ACTION_WRITE_FILE)){
                     String fileData = data.getQueryParameter(KEY_FILE_DATA);
@@ -147,7 +153,7 @@ public class FileUtils {
 
     private boolean saveFileImpl(String fileName, String content) {
         if(mFileDataCache.containsKey(fileName) && TextUtils.equals(mFileDataCache.get(fileName), content)){
-            logD("saveFileImpl: has same content, don't save  " + fileName);
+            logD("saveFileImpl: has same content, don't save " + fileName);
             return true;
         }
         File jsonFile = getFile(fileName);
@@ -179,10 +185,6 @@ public class FileUtils {
     }
 
     private String readFileImpl(String fileName){
-        if (mFileDataCache.contains(fileName)){
-            logD("readFile: " + fileName + " from cache");
-            return mFileDataCache.get(fileName);
-        }
         File jsonFile = getFile(fileName);
         String result = "";
         try {
@@ -195,11 +197,11 @@ public class FileUtils {
                     output.write(buffer, 0, n);
                 }
                 result = new String(output.toByteArray(), StandardCharsets.UTF_8);
-                mFileDataCache.put(fileName, result);
             }
         } catch (Exception e) {
             logE("readFileImpl get "+ jsonFile.getName() + " err: " + e.getCause());
         }
+        mFileDataCache.put(fileName, result);
         logD("readFileImpl get "+ jsonFile.getName() + " success: " + result);
         return result;
     }

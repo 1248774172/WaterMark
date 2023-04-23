@@ -4,10 +4,11 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
+
+import androidx.appcompat.widget.AppCompatImageView;
 
 
-public class WaterMarkView extends ImageView {
+public class WaterMarkView extends AppCompatImageView {
     private WatermarkDrawable mWatermarkDrawable;
 
     public WaterMarkView(Context context) {

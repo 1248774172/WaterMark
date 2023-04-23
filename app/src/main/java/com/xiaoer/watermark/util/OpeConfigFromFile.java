@@ -18,26 +18,37 @@ import java.util.List;
 public class OpeConfigFromFile {
 
     public static boolean saveAppConfig(Context context, AppConfig config) {
+        LogUtil.d("OpeConfigFromFile saveAppConfig:" + config);
         return FileUtils.getInstance().saveFile(context, APP_CONFIG, new Gson().toJson(config));
     }
 
     public static AppConfig getAppConfig(Context context){
-        String json = FileUtils.getInstance().readFile(context, APP_CONFIG);
-        return new Gson().fromJson(json,AppConfig.class);
+        AppConfig appConfig = new Gson().fromJson(FileUtils.getInstance().readFile(context, APP_CONFIG), AppConfig.class);
+        LogUtil.d("OpeConfigFromFile cache appConfig: " + (appConfig == null ? "null" : appConfig));
+        return appConfig;
     }
 
     public static boolean saveWaterMarkConfig(Context context, WaterMarkConfig config) {
         List<WaterMarkConfig> waterMarkConfigs = getWaterMarkConfigs(context);
         List<WaterMarkConfig> result = new ArrayList<>();
         Gson gson = new Gson();
-        if (waterMarkConfigs.size() == 0) {
-            result.add(config);
-        } else {
-            for (WaterMarkConfig waterMarkConfig : waterMarkConfigs) {
+        for (WaterMarkConfig waterMarkConfig : waterMarkConfigs) {
+            if (!TextUtils.equals(waterMarkConfig.configId, config.configId)) {
+                result.add(waterMarkConfig);
+            }else {
                 result.add(config);
-                if (!TextUtils.equals(waterMarkConfig.configId, config.configId)) {
-                    result.add(waterMarkConfig);
-                }
+            }
+        }
+        return FileUtils.getInstance().saveFile(context, SPContact.WATER_MARK_CONFIG_FILE_NAME, gson.toJson(result));
+    }
+
+    public static boolean deleteWaterMarkConfig(Context context, WaterMarkConfig config) {
+        List<WaterMarkConfig> waterMarkConfigs = getWaterMarkConfigs(context);
+        List<WaterMarkConfig> result = new ArrayList<>();
+        Gson gson = new Gson();
+        for (WaterMarkConfig waterMarkConfig : waterMarkConfigs) {
+            if (!TextUtils.equals(waterMarkConfig.configId, config.configId)) {
+                result.add(waterMarkConfig);
             }
         }
         return FileUtils.getInstance().saveFile(context, SPContact.WATER_MARK_CONFIG_FILE_NAME, gson.toJson(result));
@@ -53,25 +64,10 @@ public class OpeConfigFromFile {
     public static WaterMarkConfig getCurrentAppConfig(Context context) {
         List<WaterMarkConfig> waterMarkConfigs = getWaterMarkConfigs(context);
         for (WaterMarkConfig item : waterMarkConfigs) {
-            if (item.packageList != null && item.packageList.contains(context.getPackageName())) {
+            if (item.isOpen() && item.packageList != null && item.packageList.contains(context.getPackageName())) {
                 return item;
             }
         }
         return new WaterMarkConfig();
-    }
-
-    public static void setDebug(Context context, boolean isDebuggable) {
-        if (isDebuggable) {
-            if(!isDebug(context)){
-                FileUtils.getInstance().saveFile(context, DEBUGGABLE, "1");
-            }
-        }else {
-            FileUtils.getInstance().deleteFile(context, DEBUGGABLE);
-        }
-    }
-
-    public static boolean isDebug(Context context) {
-        String debuggable = FileUtils.getInstance().readFile(context, DEBUGGABLE);
-        return TextUtils.equals("1", debuggable);
     }
 }

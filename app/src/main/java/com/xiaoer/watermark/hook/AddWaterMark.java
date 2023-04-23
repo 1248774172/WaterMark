@@ -5,10 +5,14 @@ import android.app.Application;
 import android.os.Bundle;
 
 import com.github.kyuubiran.ezxhelper.EzXHelper;
+import com.github.kyuubiran.ezxhelper.HookFactory;
+import com.github.kyuubiran.ezxhelper.finders.MethodFinder;
 import com.xiaoer.watermark.BuildConfig;
 import com.xiaoer.watermark.util.FileUtils;
 import com.xiaoer.watermark.util.LogUtil;
 import com.xiaoer.watermark.util.ProcessUtil;
+
+import java.lang.reflect.Method;
 
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.IXposedHookZygoteInit;
@@ -40,13 +44,17 @@ public class AddWaterMark implements IXposedHookLoadPackage, IXposedHookZygoteIn
                 protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                     super.afterHookedMethod(param);
                     mApplication = (Application) param.thisObject;
-                    if(mApplication.getPackageName().equals(BuildConfig.APPLICATION_ID)){
-                        ConfigHelper.setDebug(mApplication);
+                    if(lpparam.packageName.equals(BuildConfig.APPLICATION_ID)){
+                        Class<?> loadClass = lpparam.classLoader.loadClass("com.xiaoer.watermark.hook.ConfigHelper");
+                        Method isModuleActivated = MethodFinder.fromClass(loadClass).filterByName("isModuleActivated").first();
+                        HookFactory.createMethodHook(isModuleActivated, hookFactory -> hookFactory.before(methodHookParam -> methodHookParam.setResult(true)));
                     }
 
                     if (ProcessUtil.isMainProcess()) {
-                        WaterMarkManager.init(mApplication);
                         LogUtil.init(mApplication);
+                        if(!lpparam.packageName.equals(BuildConfig.APPLICATION_ID)) {
+                            WaterMarkManager.init(mApplication);
+                        }
                         addListener(mApplication);
                     }
                 }

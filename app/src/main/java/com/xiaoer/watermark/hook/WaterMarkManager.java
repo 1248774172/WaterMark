@@ -41,7 +41,6 @@ public class WaterMarkManager {
     public static void init(Application application){
         final boolean initByCache;
         AppConfig appConfig = ConfigHelper.getAppConfig(application);
-        LogUtil.d("cache appConfig: " + (appConfig == null ? "null" : appConfig));
 
         if(appConfig != null){
             initByCache = true;
