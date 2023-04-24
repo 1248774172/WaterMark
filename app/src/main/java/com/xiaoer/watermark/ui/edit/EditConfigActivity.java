@@ -15,15 +15,18 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.SeekBar;
+import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.AppCompatSeekBar;
 
 import com.flask.colorpicker.ColorPickerView;
 import com.flask.colorpicker.builder.ColorPickerDialogBuilder;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.android.material.textfield.TextInputEditText;
@@ -99,6 +102,8 @@ public class EditConfigActivity extends AppCompatActivity implements View.OnClic
 
     private void initView() {
         mSmState = findViewById(R.id.sm_state);
+        MaterialCardView mcvStatus = findViewById(R.id.module_status_card);
+        TextView tvStatus = findViewById(R.id.module_status_text);
         mFlShow = findViewById(R.id.fl_show);
         mEtContent = findViewById(R.id.et_content);
         MaterialButton mbColor = findViewById(R.id.mb_color);
@@ -110,6 +115,15 @@ public class EditConfigActivity extends AppCompatActivity implements View.OnClic
         mAsbTextSize.setMax(100);
         mbColor.setOnClickListener(this);
         mbAppList.setOnClickListener(this);
+        if(ConfigHelper.isModuleActivated()){
+            mcvStatus.setCardBackgroundColor(getColor(R.color.purple_500));
+            tvStatus.setText("启用模块");
+            mSmState.setEnabled(true);
+        }else {
+            mcvStatus.setCardBackgroundColor(getColor(R.color.red_500));
+            tvStatus.setText("模块未成功激活");
+            mSmState.setEnabled(false);
+        }
         mSmState.setOnCheckedChangeListener((buttonView, isChecked) -> mWaterMarkConfig.setOpen(isChecked));
         mEtContent.addTextChangedListener(new TextWatcher() {
             @Override

@@ -15,12 +15,12 @@ android {
         minSdkVersion 28
         targetSdkVersion 31
         versionCode realVersioncode
-        versionName "1.5"
+        versionName "1.7"
     }
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
