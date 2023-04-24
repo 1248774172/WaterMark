@@ -4,11 +4,10 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 
-import androidx.appcompat.widget.AppCompatImageView;
 
-
-public class WaterMarkView extends AppCompatImageView {
+public class WaterMarkView extends ImageView {
     private WatermarkDrawable mWatermarkDrawable;
 
     public WaterMarkView(Context context) {
@@ -32,8 +31,7 @@ public class WaterMarkView extends AppCompatImageView {
     }
 
     private void init() {
-        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         setLayoutParams(layoutParams);
         setBackground(mWatermarkDrawable);
     }

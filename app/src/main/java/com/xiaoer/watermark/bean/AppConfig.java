@@ -2,6 +2,7 @@ package com.xiaoer.watermark.bean;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class AppConfig implements Serializable {
     private int code;
@@ -41,6 +42,11 @@ public class AppConfig implements Serializable {
 
         public void setVersionCode(String[] versionCode) {
             this.versionCode = versionCode;
+        }
+
+        @Override
+        public String toString() {
+            return "AppBean{" + "packageName='" + packageName + '\'' + ", versionCode=" + Arrays.toString(versionCode) + '}';
         }
     }
 

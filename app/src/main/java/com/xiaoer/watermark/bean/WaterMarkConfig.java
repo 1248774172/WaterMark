@@ -1,18 +1,14 @@
 package com.xiaoer.watermark.bean;
 
-import android.graphics.Color;
-import android.text.TextUtils;
-
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Objects;
 
 public class WaterMarkConfig implements Serializable {
-    public int textColor;
-    public String content;
-    public int textSize;
-    public float rotation;
-    public String configId;
+    public int textColor = 1376819886;
+    public String content = "watermark";
+    public int textSize = 12;
+    public float rotation = -25;
+    public String configId = System.currentTimeMillis() + "";
 
     public boolean isOpen;
 
@@ -26,7 +22,7 @@ public class WaterMarkConfig implements Serializable {
 
     public ArrayList<String> packageList = new ArrayList<>();
     public int getTextColor() {
-        return textColor == 0 ? Color.DKGRAY : textColor;
+        return textColor;
     }
 
     public void setTextColor(int textColor) {
@@ -34,7 +30,7 @@ public class WaterMarkConfig implements Serializable {
     }
 
     public String getContent() {
-        return TextUtils.isEmpty(content) ? "watermark" : content;
+        return content;
     }
 
     public void setContent(String content) {
@@ -42,7 +38,7 @@ public class WaterMarkConfig implements Serializable {
     }
 
     public int getTextSize() {
-        return textSize == 0 ? 12 : textSize;
+        return textSize;
     }
 
     public void setTextSize(int textSize) {
@@ -50,7 +46,7 @@ public class WaterMarkConfig implements Serializable {
     }
 
     public float getRotation() {
-        return rotation == 0 ? -25 : rotation;
+        return rotation;
     }
 
     public void setRotation(float rotation) {
@@ -79,19 +75,5 @@ public class WaterMarkConfig implements Serializable {
     @Override
     public String toString() {
         return "WaterMarkConfig{" + "content='" + content + '\'' + ", configId='" + configId + '\'' + ", packageList=" + packageList + '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (o == null || getClass() != o.getClass())
-            return false;
-        WaterMarkConfig that = (WaterMarkConfig) o;
-        return textColor == that.textColor && textSize == that.textSize && Float.compare(
-                that.rotation, rotation) == 0 && isOpen == that.isOpen
-                && Objects.equals(content, that.content)
-                && Objects.equals(configId, that.configId)
-                && Objects.equals(packageList, that.packageList);
     }
 }

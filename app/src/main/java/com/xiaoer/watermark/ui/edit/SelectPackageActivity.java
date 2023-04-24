@@ -95,10 +95,7 @@ public class SelectPackageActivity extends AppCompatActivity {
         save.setOnMenuItemClickListener(item -> {
             if(mSelectPackageAdapter != null){
                 mWaterMarkConfig.setAppList(mSelectPackageAdapter.getSelectAppList());
-                boolean success = ConfigHelper.saveWaterMarkConfig(SelectPackageActivity.this, mWaterMarkConfig);
-                if(success){
-                    finishEdit();
-                }
+                finishEdit();
             }
             return true;
         });

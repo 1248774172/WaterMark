@@ -35,12 +35,17 @@ public class OpeConfigFromFile {
         if(waterMarkConfigs.size() == 0){
             result.add(config);
         }else {
+            boolean hasAdd = false;
             for (WaterMarkConfig waterMarkConfig : waterMarkConfigs) {
                 if (!TextUtils.equals(waterMarkConfig.configId, config.configId)) {
                     result.add(waterMarkConfig);
                 }else {
+                    hasAdd = true;
                     result.add(config);
                 }
+            }
+            if(!hasAdd){
+                result.add(config);
             }
         }
         return FileUtils.getInstance().saveFile(context, SPContact.WATER_MARK_CONFIG_FILE_NAME, gson.toJson(result));
@@ -76,6 +81,6 @@ public class OpeConfigFromFile {
                 return item;
             }
         }
-        return new WaterMarkConfig();
+        return null;
     }
 }

@@ -37,7 +37,6 @@ public class EditConfigActivity extends AppCompatActivity implements View.OnClic
     public static final String REQUEST_CONFIG_KEY = "request_waterMarkConfig";
 
     private WaterMarkConfig mWaterMarkConfig;
-    private WaterMarkConfig originConfig;
     private SwitchMaterial mSmState;
     private FrameLayout mFlShow;
     private TextInputEditText mEtContent;
@@ -76,12 +75,11 @@ public class EditConfigActivity extends AppCompatActivity implements View.OnClic
 
     private void initData() {
         Intent intent = getIntent();
-        if (intent == null || intent.getSerializableExtra(REQUEST_CONFIG_KEY) == null){
-            mWaterMarkConfig = new WaterMarkConfig();
-        }else {
+        if(intent != null && intent.getSerializableExtra(REQUEST_CONFIG_KEY) != null){
             mWaterMarkConfig = (WaterMarkConfig) intent.getSerializableExtra(REQUEST_CONFIG_KEY);
+        }else {
+            mWaterMarkConfig = new WaterMarkConfig();
         }
-        originConfig = mWaterMarkConfig;
     }
 
     @Override
@@ -191,15 +189,19 @@ public class EditConfigActivity extends AppCompatActivity implements View.OnClic
 
     @Override
     public void onBackPressed() {
-        MaterialAlertDialogBuilder materialAlertDialogBuilder = new MaterialAlertDialogBuilder(EditConfigActivity.this);
-        materialAlertDialogBuilder.setTitle("退出而不保存");
-        materialAlertDialogBuilder.setMessage("所有变更将会丢失");
-        materialAlertDialogBuilder.setPositiveButton("确认", (dialog, which) -> {
-            dialog.dismiss();
-            finishEdit(false);
-        });
-        materialAlertDialogBuilder.setNegativeButton("取消", null);
-        materialAlertDialogBuilder.show();
+        if(!shouldReload){
+            MaterialAlertDialogBuilder materialAlertDialogBuilder = new MaterialAlertDialogBuilder(EditConfigActivity.this);
+            materialAlertDialogBuilder.setTitle("退出而不保存");
+            materialAlertDialogBuilder.setMessage("所有变更将会丢失");
+            materialAlertDialogBuilder.setPositiveButton("确认", (dialog, which) -> {
+                dialog.dismiss();
+                finishEdit(false);
+            });
+            materialAlertDialogBuilder.setNegativeButton("取消", null);
+            materialAlertDialogBuilder.show();
+        }else {
+            finishEdit(true);
+        }
     }
 
     public void finishEdit(boolean hasChange){

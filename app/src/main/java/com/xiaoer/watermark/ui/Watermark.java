@@ -29,10 +29,6 @@ public class Watermark {
 
     public Watermark(Activity activity) {
         this.mActivitySoftReference = new SoftReference<>(activity);
-        mText = "WaterMark";
-        mTextColor = 0xAEAEAEAE;
-        mTextSize = 12;
-        mRotation = -25;
         ViewGroup rootView = getActivityRootView();
         if(rootView == null){
             return;

@@ -143,7 +143,7 @@ public class WaterMarkManager {
     }
 
     public void addWaterMark(Activity activity){
-        if (canShow.get()) {
+        if (canShow.get() && mWaterMarkConfig != null) {
             Watermark watermark = null;
             if (mHashMap.containsKey(activity.getLocalClassName())) {
                 watermark = mHashMap.get(activity.getLocalClassName());
