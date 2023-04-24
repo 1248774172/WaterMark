@@ -125,9 +125,6 @@ public class SelectPackageActivity extends AppCompatActivity {
         mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                // if(mSelectPackageAdapter != null){
-                //     mSelectPackageAdapter.filterPackage(query, filterCallback);
-                // }
                 return false;
             }
 
@@ -143,9 +140,9 @@ public class SelectPackageActivity extends AppCompatActivity {
     }
 
     public void finishEdit(){
-        if (originConfig.equals(mWaterMarkConfig)){
-            setResult(RESULT_OK);
-        }
+        Intent data = new Intent();
+        data.putExtra("result", mWaterMarkConfig);
+        setResult(RESULT_OK, data);
         finish();
     }
 }

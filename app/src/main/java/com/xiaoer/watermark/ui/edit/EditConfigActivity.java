@@ -46,8 +46,7 @@ public class EditConfigActivity extends AppCompatActivity implements View.OnClic
 
     private ActivityResultLauncher<Intent> mResultLauncher;
 
-
-    private boolean hasChanged;
+    private boolean shouldReload = false;
 
     public static Intent getStartIntent(Context context){
         return new Intent(context, EditConfigActivity.class);
@@ -65,8 +64,9 @@ public class EditConfigActivity extends AppCompatActivity implements View.OnClic
         setContentView(R.layout.activity_edit_config);
 
         mResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
-            if (result.getResultCode() == RESULT_OK) {
-                hasChanged = true;
+            if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                mWaterMarkConfig = (WaterMarkConfig) result.getData().getSerializableExtra("result");
+                shouldReload = true;
             }
         });
         initData();
@@ -92,7 +92,7 @@ public class EditConfigActivity extends AppCompatActivity implements View.OnClic
         save.setOnMenuItemClickListener(item -> {
             boolean success = ConfigHelper.saveWaterMarkConfig(EditConfigActivity.this, mWaterMarkConfig);
             if(success){
-                finishEdit();
+                finishEdit(true);
             }
             return true;
         });
@@ -196,14 +196,14 @@ public class EditConfigActivity extends AppCompatActivity implements View.OnClic
         materialAlertDialogBuilder.setMessage("所有变更将会丢失");
         materialAlertDialogBuilder.setPositiveButton("确认", (dialog, which) -> {
             dialog.dismiss();
-            finishEdit();
+            finishEdit(false);
         });
         materialAlertDialogBuilder.setNegativeButton("取消", null);
         materialAlertDialogBuilder.show();
     }
 
-    public void finishEdit(){
-        if (hasChanged || originConfig.equals(mWaterMarkConfig)){
+    public void finishEdit(boolean hasChange){
+        if (shouldReload || hasChange){
             setResult(RESULT_OK);
         }
         finish();
