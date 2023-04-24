@@ -32,11 +32,15 @@ public class OpeConfigFromFile {
         List<WaterMarkConfig> waterMarkConfigs = getWaterMarkConfigs(context);
         List<WaterMarkConfig> result = new ArrayList<>();
         Gson gson = new Gson();
-        for (WaterMarkConfig waterMarkConfig : waterMarkConfigs) {
-            if (!TextUtils.equals(waterMarkConfig.configId, config.configId)) {
-                result.add(waterMarkConfig);
-            }else {
-                result.add(config);
+        if(waterMarkConfigs.size() == 0){
+            result.add(config);
+        }else {
+            for (WaterMarkConfig waterMarkConfig : waterMarkConfigs) {
+                if (!TextUtils.equals(waterMarkConfig.configId, config.configId)) {
+                    result.add(waterMarkConfig);
+                }else {
+                    result.add(config);
+                }
             }
         }
         return FileUtils.getInstance().saveFile(context, SPContact.WATER_MARK_CONFIG_FILE_NAME, gson.toJson(result));
@@ -51,7 +55,11 @@ public class OpeConfigFromFile {
                 result.add(waterMarkConfig);
             }
         }
-        return FileUtils.getInstance().saveFile(context, SPContact.WATER_MARK_CONFIG_FILE_NAME, gson.toJson(result));
+        if(result.size() == 0){
+            return FileUtils.getInstance().deleteFile(context, SPContact.WATER_MARK_CONFIG_FILE_NAME);
+        }else {
+            return FileUtils.getInstance().saveFile(context, SPContact.WATER_MARK_CONFIG_FILE_NAME, gson.toJson(result));
+        }
     }
 
 

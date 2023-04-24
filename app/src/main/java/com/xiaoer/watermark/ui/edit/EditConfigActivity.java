@@ -14,9 +14,15 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.SeekBar;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatSeekBar;
 
+import com.flask.colorpicker.ColorPickerView;
+import com.flask.colorpicker.builder.ColorPickerDialogBuilder;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.switchmaterial.SwitchMaterial;
@@ -28,23 +34,29 @@ import com.xiaoer.watermark.ui.WaterMarkView;
 import com.xiaoer.watermark.ui.WatermarkDrawable;
 
 public class EditConfigActivity extends AppCompatActivity implements View.OnClickListener {
-    private static final String REQUEST_CONFIG_KEY = "request_waterMarkConfig";
+    public static final String REQUEST_CONFIG_KEY = "request_waterMarkConfig";
 
     private WaterMarkConfig mWaterMarkConfig;
+    private WaterMarkConfig originConfig;
     private SwitchMaterial mSmState;
     private FrameLayout mFlShow;
     private TextInputEditText mEtContent;
-    private MaterialButton mMbColor;
-    private MaterialButton mMbAppList;
+    private AppCompatSeekBar mAsbRotation;
+    private AppCompatSeekBar mAsbTextSize;
+
+    private ActivityResultLauncher<Intent> mResultLauncher;
+
+
+    private boolean hasChanged;
 
     public static Intent getStartIntent(Context context){
         return new Intent(context, EditConfigActivity.class);
     }
 
     public static Intent getStartIntentWithConfig(Context context, WaterMarkConfig waterMarkConfig){
-        Intent intent = new Intent(context, EditConfigActivity.class);
-        intent.putExtra(REQUEST_CONFIG_KEY, waterMarkConfig);
-        return intent;
+        Intent startIntent = getStartIntent(context);
+        startIntent.putExtra(REQUEST_CONFIG_KEY, waterMarkConfig);
+        return startIntent;
     }
 
     @Override
@@ -52,27 +64,35 @@ public class EditConfigActivity extends AppCompatActivity implements View.OnClic
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_config);
 
+        mResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+            if (result.getResultCode() == RESULT_OK) {
+                hasChanged = true;
+            }
+        });
+        initData();
         initView();
+        updateView();
+    }
 
+    private void initData() {
         Intent intent = getIntent();
         if (intent == null || intent.getSerializableExtra(REQUEST_CONFIG_KEY) == null){
             mWaterMarkConfig = new WaterMarkConfig();
         }else {
             mWaterMarkConfig = (WaterMarkConfig) intent.getSerializableExtra(REQUEST_CONFIG_KEY);
         }
-
-        updateView();
+        originConfig = mWaterMarkConfig;
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuItem save = menu.add("");
-        save.setIcon(R.mipmap.ic_save);
+        save.setIcon(R.drawable.baseline_save_24);
         save.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
         save.setOnMenuItemClickListener(item -> {
             boolean success = ConfigHelper.saveWaterMarkConfig(EditConfigActivity.this, mWaterMarkConfig);
             if(success){
-                finishEdit(true);
+                finishEdit();
             }
             return true;
         });
@@ -83,11 +103,15 @@ public class EditConfigActivity extends AppCompatActivity implements View.OnClic
         mSmState = findViewById(R.id.sm_state);
         mFlShow = findViewById(R.id.fl_show);
         mEtContent = findViewById(R.id.et_content);
-        mMbColor = findViewById(R.id.mb_color);
-        mMbAppList = findViewById(R.id.mb_appList);
+        MaterialButton mbColor = findViewById(R.id.mb_color);
+        MaterialButton mbAppList = findViewById(R.id.mb_appList);
+        mAsbRotation = findViewById(R.id.asb_rotation);
+        mAsbTextSize = findViewById(R.id.asb_text_size);
 
-        mMbColor.setOnClickListener(this);
-        mMbAppList.setOnClickListener(this);
+        mAsbRotation.setMax(360);
+        mAsbTextSize.setMax(100);
+        mbColor.setOnClickListener(this);
+        mbAppList.setOnClickListener(this);
         mSmState.setOnCheckedChangeListener((buttonView, isChecked) -> mWaterMarkConfig.setOpen(isChecked));
         mEtContent.addTextChangedListener(new TextWatcher() {
             @Override
@@ -108,6 +132,41 @@ public class EditConfigActivity extends AppCompatActivity implements View.OnClic
                 }
             }
         });
+        mAsbRotation.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                mWaterMarkConfig.setRotation(-progress);
+                updateWaterView();
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+        mAsbTextSize.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                mWaterMarkConfig.setTextSize(progress);
+                updateWaterView();
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
     }
 
     private void updateWaterView() {
@@ -124,6 +183,8 @@ public class EditConfigActivity extends AppCompatActivity implements View.OnClic
         mSmState.setChecked(mWaterMarkConfig.isOpen());
         mEtContent.setText(mWaterMarkConfig.getContent());
         updateWaterView();
+        mAsbRotation.setProgress((int) (Math.abs(mWaterMarkConfig.getRotation())));
+        mAsbTextSize.setProgress((int) (Math.abs(mWaterMarkConfig.getTextSize())));
 
     }
 
@@ -133,13 +194,16 @@ public class EditConfigActivity extends AppCompatActivity implements View.OnClic
         MaterialAlertDialogBuilder materialAlertDialogBuilder = new MaterialAlertDialogBuilder(EditConfigActivity.this);
         materialAlertDialogBuilder.setTitle("退出而不保存");
         materialAlertDialogBuilder.setMessage("所有变更将会丢失");
-        materialAlertDialogBuilder.setPositiveButton("确认", (dialog, which) -> finishEdit(false));
+        materialAlertDialogBuilder.setPositiveButton("确认", (dialog, which) -> {
+            dialog.dismiss();
+            finishEdit();
+        });
         materialAlertDialogBuilder.setNegativeButton("取消", null);
         materialAlertDialogBuilder.show();
     }
 
-    public void finishEdit(boolean hasChange){
-        if (hasChange){
+    public void finishEdit(){
+        if (hasChanged || originConfig.equals(mWaterMarkConfig)){
             setResult(RESULT_OK);
         }
         finish();
@@ -194,9 +258,22 @@ public class EditConfigActivity extends AppCompatActivity implements View.OnClic
     public void onClick(View v) {
         int id = v.getId();
         if (id == R.id.mb_color){
-
-        }else {
-
+            ColorPickerDialogBuilder
+                    .with(EditConfigActivity.this)
+                    .setTitle("选择水印颜色")
+                    .initialColor(mWaterMarkConfig.getTextColor())
+                    .wheelType(ColorPickerView.WHEEL_TYPE.FLOWER)
+                    .density(12)
+                    .setPositiveButton("确认", (dialog, selectedColor, allColors) -> {
+                        mWaterMarkConfig.setTextColor(selectedColor);
+                        updateWaterView();
+                        dialog.dismiss();
+                    })
+                    .setNegativeButton("取消", null)
+                    .build()
+                    .show();
+        }else if(id == R.id.mb_appList) {
+            mResultLauncher.launch(SelectPackageActivity.getStartIntentWithConfig(EditConfigActivity.this, mWaterMarkConfig));
         }
     }
 }

@@ -57,7 +57,12 @@ public class WatermarkDrawable extends Drawable {
         float textWidth = mPaint.measureText(mText);
 
         canvas.drawColor(0x00000000);
+        // 将canvas的坐标系平移到中心点
+        canvas.translate(width / 2f, height / 2f);
+        // 进行旋转
         canvas.rotate(mRotation);
+        // 将canvas的坐标系平移回原来的位置
+        canvas.translate(-width / 2f, -height / 2f);
 
         int index = 0;
         float fromX;

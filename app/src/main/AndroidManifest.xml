@@ -14,10 +14,13 @@
         android:label="@string/app_name"
         android:networkSecurityConfig="@xml/network_config"
         android:supportsRtl="true"
-        android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar" >
+        android:theme="@style/MainAppTheme" >
         <activity
             android:name=".ui.edit.EditConfigActivity"
-            android:exported="false" />
+            android:exported="false"/>
+        <activity
+            android:name=".ui.edit.SelectPackageActivity"
+            android:exported="false"/>
         <activity
             android:name=".ui.main.MainActivity"
             android:exported="true" >

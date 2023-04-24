@@ -38,7 +38,7 @@
     <FrameLayout
         android:id="@+id/fl_show"
         android:layout_width="match_parent"
-        android:layout_height="150dp"
+        android:layout_height="200dp"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="20dp" />
 
@@ -65,9 +65,29 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:text="旋转角度："
+        android:text="水印大小"
         android:textSize="18sp"
         android:textStyle="bold" />
+
+    <androidx.appcompat.widget.AppCompatSeekBar
+        android:id="@+id/asb_text_size"
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="旋转角度"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <androidx.appcompat.widget.AppCompatSeekBar
+        android:id="@+id/asb_rotation"
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/mb_color"

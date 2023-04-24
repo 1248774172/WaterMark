@@ -5,6 +5,7 @@ import android.text.TextUtils;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class WaterMarkConfig implements Serializable {
     public int textColor;
@@ -64,15 +65,33 @@ public class WaterMarkConfig implements Serializable {
         this.configId = configId;
     }
 
-    public void addApp(String packageName) {
-        if (TextUtils.isEmpty(packageName)) {
-            return;
+    public void setAppList(ArrayList<String> newList) {
+        if(newList == null){
+            newList = new ArrayList<>();
         }
-        packageList.add(packageName);
+        packageList = newList;
+    }
+
+    public ArrayList<String> getAppList(){
+        return packageList;
     }
 
     @Override
     public String toString() {
         return "WaterMarkConfig{" + "content='" + content + '\'' + ", configId='" + configId + '\'' + ", packageList=" + packageList + '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        WaterMarkConfig that = (WaterMarkConfig) o;
+        return textColor == that.textColor && textSize == that.textSize && Float.compare(
+                that.rotation, rotation) == 0 && isOpen == that.isOpen
+                && Objects.equals(content, that.content)
+                && Objects.equals(configId, that.configId)
+                && Objects.equals(packageList, that.packageList);
     }
 }

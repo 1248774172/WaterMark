@@ -87,7 +87,7 @@
         android:layout_gravity="bottom|end"
         android:layout_marginEnd="50dp"
         android:layout_marginBottom="70dp"
-        android:src="@drawable/ic_add"
+        android:src="@drawable/baseline_add_32"
         app:fabSize="normal" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

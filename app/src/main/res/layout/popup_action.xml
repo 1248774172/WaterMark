@@ -5,12 +5,16 @@
     android:orientation="vertical">
 
     <com.google.android.material.button.MaterialButton
+        android:insetTop="0dp"
+        android:insetBottom="0dp"
         android:id="@+id/mb_state"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="启用"/>
+        android:text="启用" />
 
     <com.google.android.material.button.MaterialButton
+        android:insetTop="2dp"
+        android:insetBottom="0dp"
         android:id="@+id/mb_delete"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

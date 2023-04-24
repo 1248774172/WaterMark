@@ -66,6 +66,7 @@ public class AddWaterMark implements IXposedHookLoadPackage, IXposedHookZygoteIn
         application.registerActivityLifecycleCallbacks(new Application.ActivityLifecycleCallbacks() {
             @Override
             public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
+                WaterMarkManager.getInstance().addWaterMark(activity);
             }
 
             @Override
@@ -75,7 +76,6 @@ public class AddWaterMark implements IXposedHookLoadPackage, IXposedHookZygoteIn
 
             @Override
             public void onActivityResumed(Activity activity) {
-                WaterMarkManager.getInstance().addWaterMark(activity);
             }
 
             @Override
