@@ -58,7 +58,7 @@ public class ConfigAdapter extends RecyclerView.Adapter<ConfigViewHolder>{
         if (waterMarkConfig.isOpen() && isModuleActivated()){
             holder.itemView.setAlpha(1f);
         }else {
-            holder.itemView.setAlpha(0.5f);
+            holder.itemView.setAlpha(0.3f);
         }
         holder.mTvContent.setText(waterMarkConfig.getContent());
         holder.mCardView.setOnTouchListener((v, event) -> {

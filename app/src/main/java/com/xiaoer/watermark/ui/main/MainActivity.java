@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -22,6 +23,8 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.textview.MaterialTextView;
+import com.xiaoer.watermark.BuildConfig;
 import com.xiaoer.watermark.R;
 import com.xiaoer.watermark.bean.WaterMarkConfig;
 import com.xiaoer.watermark.hook.ConfigHelper;
@@ -81,13 +84,18 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuItem aboutMe = menu.add("关于");
-        aboutMe.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(MainActivity.this);
-                return true;
-            }
+        MenuItem aboutMe = menu.add("");
+        aboutMe.setIcon(R.drawable.baseline_about_us);
+        aboutMe.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+        aboutMe.setOnMenuItemClickListener(item -> {
+            MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(MainActivity.this, R.style.MyThemeOverlayAlertDialog);
+            View rootView = View.inflate(MainActivity.this, R.layout.dialog_about_me, null);
+            MaterialTextView mtvAppVersion = rootView.findViewById(R.id.mtv_app_version);
+            mtvAppVersion.setText(BuildConfig.VERSION_NAME);
+            builder.setView(rootView);
+            builder.setCancelable(true);
+            builder.show();
+            return true;
         });
         return super.onCreateOptionsMenu(menu);
     }

@@ -5,4 +5,14 @@
         <item name="android:fitsSystemWindows">true</item>
         <item name="android:statusBarColor">@color/black</item>
     </style>
+
+    <style name="MyThemeOverlayAlertDialog" parent="@style/ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearanceOverlay.MyApp.Dialog.Rounded</item>
+    </style>
+
+    <style name="ShapeAppearanceOverlay.MyApp.Dialog.Rounded" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">40dp</item>
+    </style>
+
 </resources>

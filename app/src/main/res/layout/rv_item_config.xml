@@ -10,9 +10,9 @@
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/mcv_root"
         android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:clickable="true"
-        android:foreground="?android:attr/selectableItemBackground"
-        android:layout_height="match_parent">
+        android:foreground="?android:attr/selectableItemBackground">
 
         <TextView
             android:id="@+id/tv_content"
@@ -20,8 +20,9 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="20dp"
-            android:text="content"
-            android:textSize="18sp" />
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            android:textStyle="bold" />
     </com.google.android.material.card.MaterialCardView>
 
 </FrameLayout>
