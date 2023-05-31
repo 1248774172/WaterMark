@@ -20,7 +20,6 @@ import android.widget.TextView;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.AppCompatSeekBar;
 
 import com.flask.colorpicker.ColorPickerView;
@@ -113,6 +112,7 @@ public class EditConfigActivity extends AppCompatActivity implements View.OnClic
 
         mAsbRotation.setMax(360);
         mAsbTextSize.setMax(100);
+        mAsbTextSize.setMin(1);
         mbColor.setOnClickListener(this);
         mbAppList.setOnClickListener(this);
         if(ConfigHelper.isModuleActivated()){
@@ -195,8 +195,8 @@ public class EditConfigActivity extends AppCompatActivity implements View.OnClic
         mSmState.setChecked(mWaterMarkConfig.isOpen());
         mEtContent.setText(mWaterMarkConfig.getContent());
         updateWaterView();
-        mAsbRotation.setProgress((int) (Math.abs(mWaterMarkConfig.getRotation())));
-        mAsbTextSize.setProgress((int) (Math.abs(mWaterMarkConfig.getTextSize())));
+        mAsbRotation.setProgress((int) Math.abs(mWaterMarkConfig.getRotation()));
+        mAsbTextSize.setProgress(Math.abs(mWaterMarkConfig.getTextSize()));
 
     }
 

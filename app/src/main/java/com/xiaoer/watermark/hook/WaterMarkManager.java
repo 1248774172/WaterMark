@@ -1,6 +1,7 @@
 package com.xiaoer.watermark.hook;
 
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
@@ -9,7 +10,6 @@ import android.content.pm.PackageManager;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
-import com.xiaoer.watermark.BuildConfig;
 import com.xiaoer.watermark.bean.AppConfig;
 import com.xiaoer.watermark.bean.WaterMarkConfig;
 import com.xiaoer.watermark.ui.Watermark;
@@ -49,36 +49,42 @@ public class WaterMarkManager {
             initByCache = false;
         }
 
-        NetWorkUtil.getInstance(application).requestByGet("https://1248774172.github.io", new NetWorkUtil.NetWorkCallback<String>() {
-            @Override
-            public void onSuccess(String result) {
-                try {
-                    AppConfig appConfig = new Gson().fromJson(result, AppConfig.class);
-                    if(!initByCache){
-                        LogUtil.d("use net appConfig");
-                        handleAppConfig(application, appConfig);
+        if (application.checkSelfPermission(Manifest.permission.INTERNET) == PackageManager.PERMISSION_GRANTED){
+            NetWorkUtil.getInstance(application).requestByGet("https://www.2ys.club/waterMark/queryAppConfig", new NetWorkUtil.NetWorkCallback<String>() {
+                @Override
+                public void onSuccess(String result) {
+                    try {
+                        AppConfig appConfig = new Gson().fromJson(result, AppConfig.class);
+                        if(!initByCache){
+                            LogUtil.d("use net appConfig");
+                            handleAppConfig(application, appConfig);
+                        }
+                        ConfigHelper.saveAppConfig(application, appConfig);
+                    }catch (Exception e){
+                        WaterMarkManager.getInstance().canShow.set(true);
+                        Toast.makeText(application,"读取网络配置失败",Toast.LENGTH_SHORT).show();
+                        LogUtil.e("onSuccess:" + e.getMessage());
                     }
-                    ConfigHelper.saveAppConfig(application, appConfig);
-                }catch (Exception e){
+                }
+
+                @Override
+                public void onFail(String msg) {
                     WaterMarkManager.getInstance().canShow.set(true);
                     Toast.makeText(application,"读取网络配置失败",Toast.LENGTH_SHORT).show();
-                    LogUtil.e("onSuccess:" + e.getMessage());
+                    LogUtil.e("请求失败，无法显示水印");
                 }
-            }
 
-            @Override
-            public void onFail(String msg) {
-                WaterMarkManager.getInstance().canShow.set(true);
-                Toast.makeText(application,"读取网络配置失败",Toast.LENGTH_SHORT).show();
-                LogUtil.e("请求失败，无法显示水印");
-            }
+                @Override
+                public void onCancel(String msg) {
+                    WaterMarkManager.getInstance().canShow.set(true);
+                    Toast.makeText(application,"读取网络配置失败",Toast.LENGTH_SHORT).show();
+                }
+            });
+        }else {
+            LogUtil.e("no internet permission");
+            WaterMarkManager.getInstance().canShow.set(true);
+        }
 
-            @Override
-            public void onCancel(String msg) {
-                WaterMarkManager.getInstance().canShow.set(true);
-                Toast.makeText(application,"读取网络配置失败",Toast.LENGTH_SHORT).show();
-            }
-        });
         initWaterMarkConfig(application);
     }
 

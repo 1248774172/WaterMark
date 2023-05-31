@@ -6,7 +6,15 @@ import java.util.Arrays;
 
 public class AppConfig implements Serializable {
     private int code;
-    private ArrayList<AppBean> appList;
+    private Data data;
+
+    public Data getData() {
+        return data;
+    }
+
+    public void setData(Data data) {
+        this.data = data;
+    }
 
     public int getCode() {
         return code;
@@ -17,11 +25,16 @@ public class AppConfig implements Serializable {
     }
 
     public ArrayList<AppBean> getAppList() {
-        return appList;
+        return data.getAppList();
     }
 
     public void setAppList(ArrayList<AppBean> appList) {
-        this.appList = appList;
+        data.setAppList(appList);
+    }
+
+    @Override
+    public String toString() {
+        return "AppConfig{" + "code=" + code + ", mData=" + data + '}';
     }
 
     public static class AppBean {
@@ -50,8 +63,20 @@ public class AppConfig implements Serializable {
         }
     }
 
-    @Override
-    public String toString() {
-        return "AppConfig{" + "code=" + code + ", appList=" + appList + '}';
+    public static class Data{
+        private ArrayList<AppBean> appList;
+
+        public ArrayList<AppBean> getAppList() {
+            return appList;
+        }
+
+        public void setAppList(ArrayList<AppBean> appList) {
+            this.appList = appList;
+        }
+
+        @Override
+        public String toString() {
+            return "Data{" + "appList=" + appList + '}';
+        }
     }
 }
